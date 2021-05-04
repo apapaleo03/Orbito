@@ -19,22 +19,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     var history : [TouchInfo]?
     var touchedNode: SKShapeNode?
-    var scores: [Double] = [0.0]
-    var previousTime: Double = 0.0
     
-    var timerLabel: SKLabelNode!
-    var timerValueLabel: SKLabelNode!
-    var timerValue = 0.0 {
+    var scoreLabel: SKLabelNode!
+    var scoreValueLabel: SKLabelNode!
+    var score = 0 {
         didSet {
-            timerValueLabel.text = "\(timerValue.roundToPlaces(places: 1))"
+            scoreValueLabel.text = "\(score)"
         }
     }
     
     var highScoreLabel: SKLabelNode!
     var highScoreValueLabel: SKLabelNode!
-    var highScoreValue = 0.0 {
+    var highScoreValue = 0 {
         didSet {
-            highScoreValueLabel.text = "\(highScoreValue.roundToPlaces(places: 1))"
+            highScoreValueLabel.text = "\(highScoreValue)"
         }
     }
     
@@ -98,17 +96,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         
-        timerLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
-        timerLabel.fontColor = .white
-        timerLabel.position = CGPoint(x: 0, y: 530)
-        timerLabel.text = "Timer"
-        self.addChild(timerLabel)
+        scoreLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
+        scoreLabel.fontColor = .white
+        scoreLabel.position = CGPoint(x: 0, y: 530)
+        scoreLabel.text = "Score"
+        self.addChild(scoreLabel)
         
-        timerValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
-        timerValueLabel.fontColor = .white
-        timerValueLabel.position = CGPoint(x: 0, y: 485)
-        timerValueLabel.text = "\(timerValue)"
-        self.addChild(timerValueLabel)
+        scoreValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
+        scoreValueLabel.fontColor = .white
+        scoreValueLabel.position = CGPoint(x: 0, y: 485)
+        scoreValueLabel.text = "\(score)"
+        self.addChild(scoreValueLabel)
         
         
         highScoreLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
@@ -168,13 +166,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func touchUp(atPoint pos : CGPoint,  last touch: TimeInterval) {
         
-        self.scores.insert((timerValue - self.previousTime) * Double(self.multiplierValue) * 10, at: 0)
-        self.previousTime = self.timerValue
         
         let wait = SKAction.wait(forDuration: 0.1)
         let block = SKAction.run({
             [unowned self] in
-            self.timerValue += 0.1
+            self.score += Int(0.1 * Double(self.multiplierValue * 10))
         })
         let sequence = SKAction.sequence([wait,block])
         if action(forKey: "timer") == nil {
@@ -269,13 +265,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func collisionBetween(ball: SKNode, object: SKNode) {
         if object.name == "anchor" || object.name == "ball"{
             if action(forKey: "timer") != nil {removeAction(forKey: "timer")}
-            self.scores.insert((timerValue - self.previousTime) * Double(self.multiplierValue) * 10, at: 0)
-            let currentScore = self.scores.reduce(0,+)
-            self.scores = [0.0]
-            if currentScore > self.highScoreValue{
-                self.highScoreValue = currentScore
+            
+            if self.score > self.highScoreValue{
+                self.highScoreValue = self.score
             }
-            self.timerValue = 0.0
+            self.score = 0
             self.multiplierValue = 0
             for child in self.children{
                 if child.name == "ball"{
