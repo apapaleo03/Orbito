@@ -17,14 +17,14 @@ class MenuScene: SKScene {
         playButtonLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         playButtonLabel.text = "Play"
         playButtonLabel.fontColor = .white
-        playButtonLabel.position = CGPoint(x: 0, y: 20)
+        playButtonLabel.position = CGPoint(x: 0, y: 40)
         playButtonLabel.name = "play"
         self.addChild(playButtonLabel)
         
         highScoreButton = SKLabelNode(fontNamed: "Baskerville-Bold")
         highScoreButton.text = "High Score"
         highScoreButton.fontColor = .white
-        highScoreButton.position = CGPoint(x: 0, y: -20)
+        highScoreButton.position = CGPoint(x: 0, y: -40)
         highScoreButton.name = "highscore"
         self.addChild(highScoreButton)
     }
@@ -36,7 +36,7 @@ class MenuScene: SKScene {
 
             if node.name == "play" {
                 if let view = view {
-                    let transition:SKTransition = SKTransition.fade(withDuration: 1)
+                    let transition:SKTransition = SKTransition.doorsOpenHorizontal(withDuration: 1)
                     let scene = SKScene(fileNamed: "GameScene")
                     scene?.scaleMode = .aspectFill
                     view.presentScene(scene!, transition: transition)

@@ -232,7 +232,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.touchDown(atPoint: t.location(in: self), atTime: t.timestamp)
         }else{
             if let view = view {
-                let transition:SKTransition = SKTransition.fade(withDuration: 1)
+                let transition:SKTransition = SKTransition.doorsCloseHorizontal(withDuration: 1)
                 let scene = SKScene(fileNamed: "MenuScene")
                 scene?.scaleMode = .aspectFill
                 view.presentScene(scene!, transition: transition)

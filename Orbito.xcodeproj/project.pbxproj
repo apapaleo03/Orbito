@@ -65,13 +65,13 @@
 				01F18DC4263C3B6A0024EF2A /* AppDelegate.swift */,
 				01F18DC6263C3B6A0024EF2A /* GameScene.sks */,
 				01F18DCA263C3B6A0024EF2A /* GameScene.swift */,
+				01F18DDD263E1E960024EF2A /* MenuScene.sks */,
+				01F18DDB263E1D740024EF2A /* MenuScene.swift */,
 				01F18DCC263C3B6A0024EF2A /* GameViewController.swift */,
 				01F18DCE263C3B6A0024EF2A /* Main.storyboard */,
 				01F18DD1263C3B6D0024EF2A /* Assets.xcassets */,
 				01F18DD3263C3B6D0024EF2A /* Info.plist */,
 				01F18DD9263C3BAA0024EF2A /* Helper.swift */,
-				01F18DDB263E1D740024EF2A /* MenuScene.swift */,
-				01F18DDD263E1E960024EF2A /* MenuScene.sks */,
 			);
 			path = Orbito;
 			sourceTree = "<group>";
