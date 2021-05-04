@@ -48,11 +48,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.backgroundColor = UIColor(red: 9.0/255, green: 69.0/255, blue: 84.0/255, alpha: 1)
         
-       
-        
-        
         // Define gravity
-        //physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         physicsWorld.contactDelegate = self
         physicsWorld.gravity = CGVector(dx:0, dy:0)
         let gravityVector = vector_float3(0,-1,0)
@@ -68,6 +64,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         // Create point at which ball orbits
+        let anchorPoint = createAnchor(at: CGPoint(x:0,y:0))
+        anchorPoint.addChild(gravity)
+        self.addChild(anchorPoint)
+        
+      
+        // Create orbiting ball
+        defineBall()
+        self.ball?.physicsBody?.fieldBitMask = gravityCategory
+        
+        
+        createScoreLabels(labelAt: CGPoint(x: 0, y: 530), valueAt: CGPoint(x: 0, y: 485))
+        
+        createHighScoreLabels(labelAt: CGPoint(x: -290, y: 530), valueAt: CGPoint(x: -300, y: 485))
+        
+        createMultiplierLabels(labelAt: CGPoint(x: 290, y: 530), valueAt: CGPoint(x: 290, y: 485))
+        
+        
+        self.staticNodes = self.children.count
+        
+    }
+    
+    func createAnchor(at pos: CGPoint) -> SKShapeNode{
+        // Create point at which ball orbits
         let w = (self.size.width + self.size.height) * 0.01
         
         let anchorPoint = SKShapeNode.init(circleOfRadius: w/2)
@@ -75,69 +94,63 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         anchorPoint.physicsBody!.contactTestBitMask = anchorPoint.physicsBody!.collisionBitMask
         anchorPoint.physicsBody?.isDynamic = false
         anchorPoint.name = "anchor"
-        anchorPoint.addChild(gravity)
-        self.addChild(anchorPoint)
-        
-      
-        // Create orbiting ball
-        
+        anchorPoint.position = pos
+        return anchorPoint
+    }
+    
+    func defineBall()  {
+        let w = (self.size.width + self.size.height) * 0.01
         self.ball = SKShapeNode.init(circleOfRadius: w)
-        self.ball?.position = CGPoint(x:0,y:10)
         self.ball?.lineWidth = 2.5
-        
         self.ball?.physicsBody = SKPhysicsBody(circleOfRadius: w )
         self.ball?.physicsBody!.contactTestBitMask = (self.ball?.physicsBody!.collisionBitMask)!
         self.ball?.physicsBody?.restitution = 0.4
         self.ball?.physicsBody?.mass = 1
-        self.ball?.physicsBody?.fieldBitMask = gravityCategory
-        //self.ball?.addChild(gravity.copy() as! SKFieldNode)
         self.ball?.name = "ball"
-        print(self.size.width)
-        
-        
-        
+    }
+    
+    func createScoreLabels(labelAt labelPos: CGPoint, valueAt valuePos: CGPoint){
         scoreLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         scoreLabel.fontColor = .white
-        scoreLabel.position = CGPoint(x: 0, y: 530)
+        scoreLabel.position = labelPos
         scoreLabel.text = "Score"
         self.addChild(scoreLabel)
         
         scoreValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         scoreValueLabel.fontColor = .white
-        scoreValueLabel.position = CGPoint(x: 0, y: 485)
+        scoreValueLabel.position = valuePos
         scoreValueLabel.text = "\(score)"
         self.addChild(scoreValueLabel)
-        
-        
+    }
+    
+    func createHighScoreLabels(labelAt labelPos: CGPoint, valueAt valuePos: CGPoint){
         highScoreLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         highScoreLabel.fontColor = .white
-        highScoreLabel.position = CGPoint(x: -290, y: 530)
+        highScoreLabel.position = labelPos
         highScoreLabel.text = "High Score"
         highScoreLabel.name = "highscore"
         self.addChild(highScoreLabel)
         
         highScoreValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         highScoreValueLabel.fontColor = .white
-        highScoreValueLabel.position = CGPoint(x: -300, y: 485)
+        highScoreValueLabel.position = valuePos
         highScoreValueLabel.text = "\(highScoreValue)"
         self.addChild(highScoreValueLabel)
-        
+    }
+    
+    func createMultiplierLabels(labelAt labelPos: CGPoint, valueAt valuePos: CGPoint){
         multiplierLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         multiplierLabel.fontColor = .white
-        multiplierLabel.position = CGPoint(x: 300, y: 530)
+        multiplierLabel.position = labelPos
         multiplierLabel.text = "Multiplier"
         self.addChild(multiplierLabel)
         
         multiplierValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         multiplierValueLabel.fontColor = .white
-        multiplierValueLabel.position = CGPoint(x: 300, y: 485)
+        multiplierValueLabel.position = valuePos
         multiplierValueLabel.text = "\(multiplierValue)"
         self.addChild(multiplierValueLabel)
-        
-        self.staticNodes = self.children.count
-        
     }
-    
     
     
     func touchDown(atPoint pos : CGPoint, atTime time : TimeInterval) {
