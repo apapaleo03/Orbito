@@ -7,6 +7,7 @@
 
 import SpriteKit
 import GameplayKit
+import Foundation
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
@@ -30,7 +31,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var highScoreLabel: SKLabelNode!
     var highScoreValueLabel: SKLabelNode!
-    var highScoreValue = 0 {
+    var highScoreValue = UserDefaults.standard.integer(forKey: "highScore") {
         didSet {
             highScoreValueLabel.text = "\(highScoreValue)"
         }
@@ -281,6 +282,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if self.score > self.highScoreValue{
                 self.highScoreValue = self.score
+                //let highScoreObject = HighScore(player: "Player", score: self.highScoreValue, dateOfScore: NSDate.init())
+                //let encodedData = try NSKeyedArchiver.archivedData(withRootObject: highScoreObject, requiringSecureCoding: false)
+                UserDefaults.standard.set(self.highScoreValue, forKey: "highScore")
             }
             self.score = 0
             self.multiplierValue = 0

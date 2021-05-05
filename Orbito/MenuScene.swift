@@ -49,12 +49,17 @@ class MenuScene: SKScene {
                     scene?.scaleMode = .aspectFill
                     view.presentScene(scene!, transition: transition)
                 }
-            }else if node.name == "highscore" {
-                print("HelloWorld!")
             }else if node.name == "settings" {
                 if let view = view {
                     let transition:SKTransition = SKTransition.doorsOpenHorizontal(withDuration: 1)
                     let scene = SKScene(fileNamed: "SettingsScene")
+                    scene?.scaleMode = .aspectFill
+                    view.presentScene(scene!, transition: transition)
+                }
+            }else if node.name == "highscore" {
+                if let view = view {
+                    let transition:SKTransition = SKTransition.doorsOpenHorizontal(withDuration: 1)
+                    let scene = SKScene(fileNamed: "HighScoresScene")
                     scene?.scaleMode = .aspectFill
                     view.presentScene(scene!, transition: transition)
                 }
