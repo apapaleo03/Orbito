@@ -10,6 +10,7 @@ import SpriteKit
 class SettingsScene: SKScene {
 
     var backButton : SKLabelNode!
+    var resetButton: SKLabelNode!
     
 
     override func didMove(to view: SKView) {

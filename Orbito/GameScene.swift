@@ -46,7 +46,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func didMove(to view: SKView) {
-        
+        print(self.size)
         self.backgroundColor = UIColor(red: 9.0/255, green: 69.0/255, blue: 84.0/255, alpha: 1)
         
         // Define gravity
@@ -74,12 +74,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         defineBall()
         self.ball?.physicsBody?.fieldBitMask = gravityCategory
         
-        
-        createScoreLabels(labelAt: CGPoint(x: 0, y: 530), valueAt: CGPoint(x: 0, y: 485))
-        
-        createHighScoreLabels(labelAt: CGPoint(x: -290, y: 530), valueAt: CGPoint(x: -300, y: 485))
-        
-        createMultiplierLabels(labelAt: CGPoint(x: 290, y: 530), valueAt: CGPoint(x: 290, y: 485))
+        createHighScoreLabels(x: -(self.size.width/2-140), y: self.size.height/2-97)
+        createScoreLabels(x: 0, y : self.size.height/2-97)
+        createMultiplierLabels(x: self.size.width/2-140, y: self.size.height/2-97)
         
         
         self.staticNodes = self.children.count
@@ -110,45 +107,51 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.ball?.name = "ball"
     }
     
-    func createScoreLabels(labelAt labelPos: CGPoint, valueAt valuePos: CGPoint){
+    func createScoreLabels(x: CGFloat, y: CGFloat){
         scoreLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         scoreLabel.fontColor = .white
-        scoreLabel.position = labelPos
+        scoreLabel.fontSize = 24
+        scoreLabel.position = CGPoint(x: x, y: y + 20)
         scoreLabel.text = "Score"
         self.addChild(scoreLabel)
         
         scoreValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         scoreValueLabel.fontColor = .white
-        scoreValueLabel.position = valuePos
+        scoreValueLabel.fontSize = 24
+        scoreValueLabel.position = CGPoint(x: x, y: y - 20)
         scoreValueLabel.text = "\(score)"
         self.addChild(scoreValueLabel)
     }
     
-    func createHighScoreLabels(labelAt labelPos: CGPoint, valueAt valuePos: CGPoint){
+    func createHighScoreLabels(x: CGFloat, y: CGFloat){
         highScoreLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         highScoreLabel.fontColor = .white
-        highScoreLabel.position = labelPos
+        highScoreLabel.fontSize = 24
+        highScoreLabel.position = CGPoint(x: x, y: y + 20)
         highScoreLabel.text = "High Score"
         highScoreLabel.name = "highscore"
         self.addChild(highScoreLabel)
         
         highScoreValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         highScoreValueLabel.fontColor = .white
-        highScoreValueLabel.position = valuePos
+        highScoreValueLabel.fontSize = 24
+        highScoreValueLabel.position = CGPoint(x: x, y: y - 20)
         highScoreValueLabel.text = "\(highScoreValue)"
         self.addChild(highScoreValueLabel)
     }
     
-    func createMultiplierLabels(labelAt labelPos: CGPoint, valueAt valuePos: CGPoint){
+    func createMultiplierLabels(x: CGFloat, y: CGFloat){
         multiplierLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         multiplierLabel.fontColor = .white
-        multiplierLabel.position = labelPos
+        multiplierLabel.fontSize = 24
+        multiplierLabel.position = CGPoint(x: x, y: y + 20)
         multiplierLabel.text = "Multiplier"
         self.addChild(multiplierLabel)
         
         multiplierValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         multiplierValueLabel.fontColor = .white
-        multiplierValueLabel.position = valuePos
+        multiplierValueLabel.fontSize = 24
+        multiplierValueLabel.position = CGPoint(x: x, y: y - 20)
         multiplierValueLabel.text = "\(multiplierValue)"
         self.addChild(multiplierValueLabel)
     }
