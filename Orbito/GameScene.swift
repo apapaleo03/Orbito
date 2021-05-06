@@ -13,13 +13,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private var ball : SKShapeNode?
     var staticNodes : Int?
+    var history : [TouchInfo]?
+    var touchedNode: SKShapeNode?
+    var highScoreArray = UserDefaults.standard.object(forKey: "highScores") as? [Int] ?? []
     
     struct TouchInfo {
         var location: CGPoint
         var time: TimeInterval
     }
-    var history : [TouchInfo]?
-    var touchedNode: SKShapeNode?
+
     
     var scoreLabel: SKLabelNode!
     var scoreValueLabel: SKLabelNode!
@@ -29,13 +31,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    
     var highScoreLabel: SKLabelNode!
     var highScoreValueLabel: SKLabelNode!
-    var highScoreValue = UserDefaults.standard.integer(forKey: "highScore") {
+    var highScoreValue = 0 {
         didSet {
             highScoreValueLabel.text = "\(highScoreValue)"
         }
     }
+    
+    
     
     var multiplierLabel: SKLabelNode!
     var multiplierValueLabel: SKLabelNode!
@@ -48,6 +53,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         print(self.size)
         self.backgroundColor = UIColor(red: 9.0/255, green: 69.0/255, blue: 84.0/255, alpha: 1)
+        
         
         // Define gravity
         physicsWorld.contactDelegate = self
@@ -136,6 +142,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         highScoreValueLabel.fontColor = .white
         highScoreValueLabel.fontSize = 24
         highScoreValueLabel.position = CGPoint(x: x, y: y - 20)
+        if !highScoreArray.isEmpty{
+            self.highScoreValue = highScoreArray.last!
+        }
         highScoreValueLabel.text = "\(highScoreValue)"
         self.addChild(highScoreValueLabel)
     }
@@ -287,7 +296,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.highScoreValue = self.score
                 //let highScoreObject = HighScore(player: "Player", score: self.highScoreValue, dateOfScore: NSDate.init())
                 //let encodedData = try NSKeyedArchiver.archivedData(withRootObject: highScoreObject, requiringSecureCoding: false)
-                UserDefaults.standard.set(self.highScoreValue, forKey: "highScore")
+                self.highScoreArray.append(self.highScoreValue)
+                if self.highScoreArray.count > 10{
+                    self.highScoreArray.removeFirst()
+                }
+                print(self.highScoreArray)
+                UserDefaults.standard.set(self.highScoreArray, forKey: "highScores")
             }
             self.score = 0
             self.multiplierValue = 0

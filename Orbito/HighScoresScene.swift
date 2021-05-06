@@ -11,7 +11,8 @@ class HighScoresScene: SKScene {
 
     let defaults = UserDefaults.standard
     var backButton: SKLabelNode!
-    var highScoreLabel: SKLabelNode!
+    var highScoreLabel: SKLabelNode = SKLabelNode(fontNamed: "Baskerville-Bold")
+    var highScoreText: SKLabelNode!
     
     
 
@@ -25,16 +26,33 @@ class HighScoresScene: SKScene {
         backButton.name = "back"
         self.addChild(backButton)
         
-        let highScore = defaults.integer(forKey: "highScore")
-        if highScore != 0 {
-            highScoreLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
-            highScoreLabel.text = "\(highScore)"
-            highScoreLabel.fontColor = .white
-            highScoreLabel.position = CGPoint(x: 0, y: 0)
-            highScoreLabel.name = "highScore"
-            self.addChild(highScoreLabel)
+        highScoreText = SKLabelNode(fontNamed: "Baskerville-Bold")
+        highScoreText.text = "High Scores"
+        highScoreText.fontColor = .white
+        highScoreText.fontSize = 40
+        highScoreText.position = CGPoint(x: 0, y:350 )
+        highScoreText.name = "highscore"
+        self.addChild(highScoreText)
+        
+        
+        
+        let highScores = defaults.object(forKey: "highScores") as? [Int] ?? []
+        print(highScores)
+        var start = 230
+        for score in highScores.reversed(){
+            displayScore(at: CGPoint(x: 0, y: start), score: score)
+            start -= 60
         }
         
+    }
+    
+    func displayScore(at pos: CGPoint, score value: Int?){
+        if let scoreLabel = highScoreLabel.copy() as? SKLabelNode{
+            scoreLabel.text = "\(value!)"
+            scoreLabel.fontColor = .white
+            scoreLabel.position = pos
+            self.addChild(scoreLabel)
+        }
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
