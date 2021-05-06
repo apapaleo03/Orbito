@@ -21,7 +21,7 @@ class HighScoresScene: SKScene {
         backButton = SKLabelNode(fontNamed: "Baskerville-Bold")
         backButton.text = "Back"
         backButton.fontColor = .white
-        backButton.position = CGPoint(x: -290, y:530 )
+        backButton.position = CGPoint(x: -(self.size.width/2 - 140), y:self.size.height/2-97 )
         backButton.name = "back"
         self.addChild(backButton)
         

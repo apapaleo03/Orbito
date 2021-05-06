@@ -19,9 +19,16 @@ class SettingsScene: SKScene {
         backButton = SKLabelNode(fontNamed: "Baskerville-Bold")
         backButton.text = "Back"
         backButton.fontColor = .white
-        backButton.position = CGPoint(x: 0, y: 0)
+        backButton.position = CGPoint(x: 0, y: 40)
         backButton.name = "back"
         self.addChild(backButton)
+        
+        resetButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        resetButton.text = "Reset"
+        resetButton.fontColor = .white
+        resetButton.position = CGPoint(x: 0, y: -40)
+        resetButton.name = "reset"
+        self.addChild(resetButton)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -36,6 +43,8 @@ class SettingsScene: SKScene {
                     scene?.scaleMode = .aspectFill
                     view.presentScene(scene!, transition: transition)
                 }
+            }else if node.name == "reset"{
+                UserDefaults.standard.removeObject(forKey: "highScore")
             }
         }
     }
