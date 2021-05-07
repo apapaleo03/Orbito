@@ -16,6 +16,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var history : [TouchInfo]?
     var touchedNode: SKShapeNode?
     var scoreBoardArray = UserDefaults.standard.object(forKey: "scoreboard") as? [Int] ?? []
+    var w : CGFloat?
+    
     
     struct TouchInfo {
         var location: CGPoint
@@ -51,9 +53,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func didMove(to view: SKView) {
-        print(self.size)
-        self.backgroundColor = UIColor(red: 9.0/255, green: 69.0/255, blue: 84.0/255, alpha: 1)
         
+        self.backgroundColor = UIColor(red: 9.0/255, green: 69.0/255, blue: 84.0/255, alpha: 1)
+        w = (self.size.width + self.size.height) * 0.01
         
         // Define gravity
         physicsWorld.contactDelegate = self
@@ -91,10 +93,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func createAnchor(at pos: CGPoint) -> SKShapeNode{
         // Create point at which ball orbits
-        let w = (self.size.width + self.size.height) * 0.01
         
-        let anchorPoint = SKShapeNode.init(circleOfRadius: w/2)
-        anchorPoint.physicsBody = SKPhysicsBody(circleOfRadius: w/2)
+        let anchorPoint = SKShapeNode.init(circleOfRadius: self.w!/2)
+        anchorPoint.physicsBody = SKPhysicsBody(circleOfRadius: self.w!/2)
         anchorPoint.physicsBody!.contactTestBitMask = anchorPoint.physicsBody!.collisionBitMask
         anchorPoint.physicsBody?.isDynamic = false
         anchorPoint.name = "anchor"
@@ -103,11 +104,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func defineBall()  {
-        let w = (self.size.width + self.size.height) * 0.01
-        self.ball = SKShapeNode.init(circleOfRadius: w)
+        self.ball = SKShapeNode.init(circleOfRadius: self.w!)
         self.ball?.lineWidth = 2.5
-        self.ball?.physicsBody = SKPhysicsBody(circleOfRadius: w )
-        self.ball?.physicsBody!.contactTestBitMask = (self.ball?.physicsBody!.collisionBitMask)!
+        //self.ball?.physicsBody = SKPhysicsBody(circleOfRadius: w )
+        //self.ball?.physicsBody!.contactTestBitMask = (self.ball?.physicsBody!.collisionBitMask)!
         self.ball?.physicsBody?.restitution = 0.4
         self.ball?.physicsBody?.mass = 1
         self.ball?.name = "ball"
@@ -165,7 +165,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(multiplierValueLabel)
     }
     
-    
+    //func createBall(at pos: CGPoint){
+        
+    //}
     func touchDown(atPoint pos : CGPoint, atTime time : TimeInterval) {
         if let ball = self.ball?.copy() as? SKShapeNode {
             ball.physicsBody?.velocity = CGVector(dx:0,dy:0)
@@ -173,15 +175,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ball.position = pos
             ball.strokeColor = RandomColor()
             self.addChild(ball)
-            var thisNode: SKShapeNode?
-            self.history = [TouchInfo(location: pos, time: time)]
-            for node in nodes(at: pos) {
-                if node.name == "ball" {
-                    thisNode = node as? SKShapeNode
-                }
-            }
-            self.touchedNode = thisNode
         }
+        var thisNode: SKShapeNode?
+        self.history = [TouchInfo(location: pos, time: time)]
+        for node in nodes(at: pos) {
+            if node.name == "ball" {
+                thisNode = node as? SKShapeNode
+            }
+        }
+        self.touchedNode = thisNode
         
     }
     
@@ -208,6 +210,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         
         self.touchedNode?.physicsBody?.isDynamic = true
+        self.touchedNode?.physicsBody = SKPhysicsBody(circleOfRadius: self.w! )
+        self.touchedNode?.physicsBody!.contactTestBitMask = (self.touchedNode?.physicsBody!.collisionBitMask)!
+        
         if let history = self.history, history.count > 1 {
             var vx: CGFloat = 0.0
             var vy: CGFloat = 0.0
@@ -243,6 +248,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.touchedNode?.physicsBody?.velocity = CGVector(dx: vx, dy: vy)
         }
         self.history = nil
+        self.touchedNode = nil
         
     }
     
@@ -298,25 +304,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func collisionBetween(ball: SKNode, object: SKNode) {
-        if object.name == "anchor" || object.name == "ball"{
-            if action(forKey: "timer") != nil {removeAction(forKey: "timer")}
-            
-            if self.score > self.highScoreValue{
-                self.highScoreValue = self.score
-                //let highScoreObject = HighScore(player: "Player", score: self.highScoreValue, dateOfScore: NSDate.init())
-                //let encodedData = try NSKeyedArchiver.archivedData(withRootObject: highScoreObject, requiringSecureCoding: false)
-                self.scoreBoardArray.append(self.highScoreValue)
-                if self.scoreBoardArray.count > 10{
-                    self.scoreBoardArray.removeFirst()
+        if self.touchedNode == nil {
+            if object.name == "anchor" || object.name == "ball" {
+                if action(forKey: "timer") != nil {removeAction(forKey: "timer")}
+                
+                if self.score > self.highScoreValue{
+                    self.highScoreValue = self.score
+                    self.scoreBoardArray.append(self.highScoreValue)
+                    if self.scoreBoardArray.count > 10{
+                        self.scoreBoardArray.removeFirst()
+                    }
+                    UserDefaults.standard.set(self.scoreBoardArray, forKey: "scoreboard")
                 }
-                print(self.scoreBoardArray)
-                UserDefaults.standard.set(self.scoreBoardArray, forKey: "scoreboard")
-            }
-            self.score = 0
-            self.multiplierValue = 0
-            for child in self.children{
-                if child.name == "ball"{
-                    destroy(ball: child)
+                self.score = 0
+                self.multiplierValue = 0
+                for child in self.children{
+                    if child.name == "ball"{
+                        destroy(ball: child)
+                    }
                 }
             }
         }
