@@ -10,7 +10,7 @@ import SpriteKit
 class MenuScene: SKScene {
 
     var playButtonLabel : SKLabelNode!
-    var highScoreButton : SKLabelNode!
+    var scoreboardButton : SKLabelNode!
     var settingsButton : SKLabelNode!
 
     override func didMove(to view: SKView) {
@@ -22,12 +22,12 @@ class MenuScene: SKScene {
         playButtonLabel.name = "play"
         self.addChild(playButtonLabel)
         
-        highScoreButton = SKLabelNode(fontNamed: "Baskerville-Bold")
-        highScoreButton.text = "High Score"
-        highScoreButton.fontColor = .white
-        highScoreButton.position = CGPoint(x: 0, y: 0)
-        highScoreButton.name = "highscore"
-        self.addChild(highScoreButton)
+        scoreboardButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        scoreboardButton.text = "Scoreboard"
+        scoreboardButton.fontColor = .white
+        scoreboardButton.position = CGPoint(x: 0, y: 0)
+        scoreboardButton.name = "scoreboard"
+        self.addChild(scoreboardButton)
         
         settingsButton = SKLabelNode(fontNamed: "Baskerville-Bold")
         settingsButton.text = "Settings"
@@ -56,10 +56,10 @@ class MenuScene: SKScene {
                     scene?.scaleMode = .aspectFill
                     view.presentScene(scene!, transition: transition)
                 }
-            }else if node.name == "highscore" {
+            }else if node.name == "scoreboard" {
                 if let view = view {
                     let transition:SKTransition = SKTransition.doorsOpenHorizontal(withDuration: 1)
-                    let scene = SKScene(fileNamed: "HighScoresScene")
+                    let scene = SKScene(fileNamed: "ScoreboardScene")
                     scene?.scaleMode = .aspectFill
                     view.presentScene(scene!, transition: transition)
                 }

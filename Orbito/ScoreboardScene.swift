@@ -7,12 +7,12 @@
 
 import SpriteKit
 
-class HighScoresScene: SKScene {
+class ScoreboardScene: SKScene {
 
     let defaults = UserDefaults.standard
     var backButton: SKLabelNode!
-    var highScoreLabel: SKLabelNode = SKLabelNode(fontNamed: "Baskerville-Bold")
-    var highScoreText: SKLabelNode!
+    var scoreboardValue: SKLabelNode = SKLabelNode(fontNamed: "Baskerville-Bold")
+    var scoreboardLabel: SKLabelNode!
     
     
 
@@ -26,17 +26,17 @@ class HighScoresScene: SKScene {
         backButton.name = "back"
         self.addChild(backButton)
         
-        highScoreText = SKLabelNode(fontNamed: "Baskerville-Bold")
-        highScoreText.text = "High Scores"
-        highScoreText.fontColor = .white
-        highScoreText.fontSize = 40
-        highScoreText.position = CGPoint(x: 0, y:350 )
-        highScoreText.name = "highscore"
-        self.addChild(highScoreText)
+        scoreboardLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
+        scoreboardLabel.text = "Scoreboard"
+        scoreboardLabel.fontColor = .white
+        scoreboardLabel.fontSize = 40
+        scoreboardLabel.position = CGPoint(x: 0, y:350 )
+        scoreboardLabel.name = "scoreboard"
+        self.addChild(scoreboardLabel)
         
         
         
-        let highScores = defaults.object(forKey: "highScores") as? [Int] ?? []
+        let highScores = defaults.object(forKey: "scoreboard") as? [Int] ?? []
         print(highScores)
         var start = 230
         for score in highScores.reversed(){
@@ -47,7 +47,7 @@ class HighScoresScene: SKScene {
     }
     
     func displayScore(at pos: CGPoint, score value: Int?){
-        if let scoreLabel = highScoreLabel.copy() as? SKLabelNode{
+        if let scoreLabel = scoreboardValue.copy() as? SKLabelNode{
             scoreLabel.text = "\(value!)"
             scoreLabel.fontColor = .white
             scoreLabel.position = pos

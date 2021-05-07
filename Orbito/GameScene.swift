@@ -15,7 +15,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var staticNodes : Int?
     var history : [TouchInfo]?
     var touchedNode: SKShapeNode?
-    var highScoreArray = UserDefaults.standard.object(forKey: "highScores") as? [Int] ?? []
+    var scoreBoardArray = UserDefaults.standard.object(forKey: "scoreboard") as? [Int] ?? []
     
     struct TouchInfo {
         var location: CGPoint
@@ -142,8 +142,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         highScoreValueLabel.fontColor = .white
         highScoreValueLabel.fontSize = 24
         highScoreValueLabel.position = CGPoint(x: x, y: y - 20)
-        if !highScoreArray.isEmpty{
-            self.highScoreValue = highScoreArray.last!
+        if !scoreBoardArray.isEmpty{
+            self.highScoreValue = scoreBoardArray.last!
         }
         highScoreValueLabel.text = "\(highScoreValue)"
         self.addChild(highScoreValueLabel)
@@ -211,6 +211,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if let history = self.history, history.count > 1 {
             var vx: CGFloat = 0.0
             var vy: CGFloat = 0.0
+            /*
             var previousTouchInfo: TouchInfo?
             
             let maxIterations = 3
@@ -230,8 +231,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 previousTouchInfo = touchInfo
             }
             let count = CGFloat(numElts-1)
+            
             let velocity = CGVector(dx: vx/count,dy: vy/count)
-            self.touchedNode?.physicsBody?.velocity = velocity
+             */
+            let firstTouch = history.first
+            let lastTouch = history.last
+            let dx = lastTouch!.location.x - firstTouch!.location.x
+            let dy = lastTouch!.location.y - firstTouch!.location.y
+            vx = dx * 5
+            vy = dy * 5
+            self.touchedNode?.physicsBody?.velocity = CGVector(dx: vx, dy: vy)
         }
         self.history = nil
         
@@ -296,12 +305,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.highScoreValue = self.score
                 //let highScoreObject = HighScore(player: "Player", score: self.highScoreValue, dateOfScore: NSDate.init())
                 //let encodedData = try NSKeyedArchiver.archivedData(withRootObject: highScoreObject, requiringSecureCoding: false)
-                self.highScoreArray.append(self.highScoreValue)
-                if self.highScoreArray.count > 10{
-                    self.highScoreArray.removeFirst()
+                self.scoreBoardArray.append(self.highScoreValue)
+                if self.scoreBoardArray.count > 10{
+                    self.scoreBoardArray.removeFirst()
                 }
-                print(self.highScoreArray)
-                UserDefaults.standard.set(self.highScoreArray, forKey: "highScores")
+                print(self.scoreBoardArray)
+                UserDefaults.standard.set(self.scoreBoardArray, forKey: "scoreboard")
             }
             self.score = 0
             self.multiplierValue = 0

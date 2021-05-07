@@ -44,7 +44,7 @@ class SettingsScene: SKScene {
                     view.presentScene(scene!, transition: transition)
                 }
             }else if node.name == "reset"{
-                UserDefaults.standard.removeObject(forKey: "highScore")
+                UserDefaults.standard.removeObject(forKey: "scoreboard")
             }
         }
     }

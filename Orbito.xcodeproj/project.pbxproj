@@ -19,8 +19,8 @@
 		01F18DE02641EC650024EF2A /* SettingsScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F18DDF2641EC650024EF2A /* SettingsScene.swift */; };
 		01F18DE22641ECAF0024EF2A /* SettingsScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 01F18DE12641ECAF0024EF2A /* SettingsScene.sks */; };
 		01F18DE42642DCE80024EF2A /* HighScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F18DE32642DCE80024EF2A /* HighScore.swift */; };
-		01F18DE62642EF2D0024EF2A /* HighScoresScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F18DE52642EF2D0024EF2A /* HighScoresScene.swift */; };
-		01F18DE82642EF420024EF2A /* HighScoresScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 01F18DE72642EF420024EF2A /* HighScoresScene.sks */; };
+		01F18DE62642EF2D0024EF2A /* ScoreboardScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F18DE52642EF2D0024EF2A /* ScoreboardScene.swift */; };
+		01F18DE82642EF420024EF2A /* ScoreboardScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 01F18DE72642EF420024EF2A /* ScoreboardScene.sks */; };
 		01F18DEA264441920024EF2A /* OrbitoLaunch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01F18DE9264441920024EF2A /* OrbitoLaunch.storyboard */; };
 /* End PBXBuildFile section */
 
@@ -39,8 +39,8 @@
 		01F18DDF2641EC650024EF2A /* SettingsScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScene.swift; sourceTree = "<group>"; };
 		01F18DE12641ECAF0024EF2A /* SettingsScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = SettingsScene.sks; sourceTree = "<group>"; };
 		01F18DE32642DCE80024EF2A /* HighScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighScore.swift; sourceTree = "<group>"; };
-		01F18DE52642EF2D0024EF2A /* HighScoresScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighScoresScene.swift; sourceTree = "<group>"; };
-		01F18DE72642EF420024EF2A /* HighScoresScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = HighScoresScene.sks; sourceTree = "<group>"; };
+		01F18DE52642EF2D0024EF2A /* ScoreboardScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreboardScene.swift; sourceTree = "<group>"; };
+		01F18DE72642EF420024EF2A /* ScoreboardScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = ScoreboardScene.sks; sourceTree = "<group>"; };
 		01F18DE9264441920024EF2A /* OrbitoLaunch.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OrbitoLaunch.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,11 +80,11 @@
 				01F18DCA263C3B6A0024EF2A /* GameScene.swift */,
 				01F18DDB263E1D740024EF2A /* MenuScene.swift */,
 				01F18DDF2641EC650024EF2A /* SettingsScene.swift */,
-				01F18DE52642EF2D0024EF2A /* HighScoresScene.swift */,
+				01F18DE52642EF2D0024EF2A /* ScoreboardScene.swift */,
 				01F18DC6263C3B6A0024EF2A /* GameScene.sks */,
 				01F18DDD263E1E960024EF2A /* MenuScene.sks */,
 				01F18DE12641ECAF0024EF2A /* SettingsScene.sks */,
-				01F18DE72642EF420024EF2A /* HighScoresScene.sks */,
+				01F18DE72642EF420024EF2A /* ScoreboardScene.sks */,
 				01F18DCC263C3B6A0024EF2A /* GameViewController.swift */,
 				01F18DCE263C3B6A0024EF2A /* Main.storyboard */,
 				01F18DD1263C3B6D0024EF2A /* Assets.xcassets */,
@@ -156,7 +156,7 @@
 				01F18DC7263C3B6A0024EF2A /* GameScene.sks in Resources */,
 				01F18DD2263C3B6D0024EF2A /* Assets.xcassets in Resources */,
 				01F18DDE263E1E960024EF2A /* MenuScene.sks in Resources */,
-				01F18DE82642EF420024EF2A /* HighScoresScene.sks in Resources */,
+				01F18DE82642EF420024EF2A /* ScoreboardScene.sks in Resources */,
 				01F18DEA264441920024EF2A /* OrbitoLaunch.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -173,7 +173,7 @@
 				01F18DCD263C3B6A0024EF2A /* GameViewController.swift in Sources */,
 				01F18DDC263E1D740024EF2A /* MenuScene.swift in Sources */,
 				01F18DE02641EC650024EF2A /* SettingsScene.swift in Sources */,
-				01F18DE62642EF2D0024EF2A /* HighScoresScene.swift in Sources */,
+				01F18DE62642EF2D0024EF2A /* ScoreboardScene.swift in Sources */,
 				01F18DC5263C3B6A0024EF2A /* AppDelegate.swift in Sources */,
 				01F18DDA263C3BAA0024EF2A /* Helper.swift in Sources */,
 			);
