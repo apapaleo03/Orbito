@@ -174,12 +174,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ball.physicsBody?.isDynamic = false
             ball.position = pos
             ball.strokeColor = RandomColor()
+            ball.name = "protoball"
             self.addChild(ball)
         }
         var thisNode: SKShapeNode?
         self.history = [TouchInfo(location: pos, time: time)]
         for node in nodes(at: pos) {
-            if node.name == "ball" {
+            if node.name == "protoball" {
                 thisNode = node as? SKShapeNode
             }
         }
@@ -212,6 +213,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.touchedNode?.physicsBody?.isDynamic = true
         self.touchedNode?.physicsBody = SKPhysicsBody(circleOfRadius: self.w! )
         self.touchedNode?.physicsBody!.contactTestBitMask = (self.touchedNode?.physicsBody!.collisionBitMask)!
+        self.touchedNode?.name = "ball"
         
         if let history = self.history, history.count > 1 {
             var vx: CGFloat = 0.0
@@ -304,27 +306,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func collisionBetween(ball: SKNode, object: SKNode) {
-        if self.touchedNode == nil {
-            if object.name == "anchor" || object.name == "ball" {
-                if action(forKey: "timer") != nil {removeAction(forKey: "timer")}
-                
-                if self.score > self.highScoreValue{
-                    self.highScoreValue = self.score
-                    self.scoreBoardArray.append(self.highScoreValue)
-                    if self.scoreBoardArray.count > 10{
-                        self.scoreBoardArray.removeFirst()
-                    }
-                    UserDefaults.standard.set(self.scoreBoardArray, forKey: "scoreboard")
+        
+        if object.name == "anchor" || object.name == "ball" {
+            if action(forKey: "timer") != nil {removeAction(forKey: "timer")}
+            
+            if self.score > self.highScoreValue{
+                self.highScoreValue = self.score
+                self.scoreBoardArray.append(self.highScoreValue)
+                if self.scoreBoardArray.count > 10{
+                    self.scoreBoardArray.removeFirst()
                 }
-                self.score = 0
-                self.multiplierValue = 0
-                for child in self.children{
-                    if child.name == "ball"{
-                        destroy(ball: child)
-                    }
+                UserDefaults.standard.set(self.scoreBoardArray, forKey: "scoreboard")
+            }
+            self.score = 0
+            self.multiplierValue = 0
+            for child in self.children{
+                if child.name == "ball"{
+                    destroy(ball: child)
                 }
             }
         }
+        
     }
     
     func destroy(ball:SKNode){
