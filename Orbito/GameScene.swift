@@ -17,6 +17,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var touchedNode: SKShapeNode?
     var scoreBoardArray = UserDefaults.standard.object(forKey: "scoreboard") as? [Int] ?? []
     var w : CGFloat?
+    let difficulty = UserDefaults.standard.string(forKey: "difficulty") ?? "easy"
+    let gravity = SKFieldNode.radialGravityField()
+    let gravityCategory : UInt32 = 0x1 << 0
+    var currentlyTouched : Bool?
+
     
     
     struct TouchInfo {
@@ -54,6 +59,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         
+        self.view?.isMultipleTouchEnabled = false
         self.backgroundColor = UIColor(red: 9.0/255, green: 69.0/255, blue: 84.0/255, alpha: 1)
         w = (self.size.width + self.size.height) * 0.01
         
@@ -65,17 +71,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         gravityNode.strength = 0
         addChild(gravityNode)
         
-        let gravityCategory : UInt32 = 0x1 << 0
-        let gravity = SKFieldNode.radialGravityField()
-        gravity.strength = 10
-        gravity.categoryBitMask = gravityCategory
-        gravity.falloff = 0
+        self.gravity.strength = 10
+        self.gravity.categoryBitMask = self.gravityCategory
+        self.gravity.falloff = 0
         
         
         // Create point at which ball orbits
-        let anchorPoint = createAnchor(at: CGPoint(x:0,y:0))
-        anchorPoint.addChild(gravity)
-        self.addChild(anchorPoint)
+        createAnchor(at: CGPoint(x:0,y:0))
+        
         
       
         // Create orbiting ball
@@ -91,7 +94,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
-    func createAnchor(at pos: CGPoint) -> SKShapeNode{
+    func createAnchor(at pos: CGPoint){
         // Create point at which ball orbits
         
         let anchorPoint = SKShapeNode.init(circleOfRadius: self.w!/2)
@@ -100,14 +103,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         anchorPoint.physicsBody?.isDynamic = false
         anchorPoint.name = "anchor"
         anchorPoint.position = pos
-        return anchorPoint
+        anchorPoint.addChild(self.gravity)
+        self.addChild(anchorPoint)
     }
     
     func defineBall()  {
         self.ball = SKShapeNode.init(circleOfRadius: self.w!)
         self.ball?.lineWidth = 2.5
-        //self.ball?.physicsBody = SKPhysicsBody(circleOfRadius: w )
-        //self.ball?.physicsBody!.contactTestBitMask = (self.ball?.physicsBody!.collisionBitMask)!
         self.ball?.physicsBody?.restitution = 0.4
         self.ball?.physicsBody?.mass = 1
         self.ball?.name = "ball"
@@ -165,10 +167,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(multiplierValueLabel)
     }
     
-    //func createBall(at pos: CGPoint){
-        
-    //}
-    func touchDown(atPoint pos : CGPoint, atTime time : TimeInterval) {
+    func createBall(at pos: CGPoint){
         if let ball = self.ball?.copy() as? SKShapeNode {
             ball.physicsBody?.velocity = CGVector(dx:0,dy:0)
             ball.physicsBody?.isDynamic = false
@@ -177,6 +176,69 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ball.name = "protoball"
             self.addChild(ball)
         }
+    }
+    
+    func startScorer() {
+        let wait = SKAction.wait(forDuration: 0.1)
+        let block = SKAction.run({
+            [unowned self] in
+            self.score += Int(0.1 * Double(self.multiplierValue * 10))
+        })
+        let sequence = SKAction.sequence([wait,block])
+        if action(forKey: "timer") == nil {
+            run(SKAction.repeatForever(sequence), withKey: "timer")
+        }
+        self.multiplierValue += 1
+    }
+    
+    func movedBasedVelocity() -> CGVector {
+        if let history = self.history, history.count > 1 {
+            var vx: CGFloat = 0.0
+            var vy: CGFloat = 0.0
+            var previousTouchInfo: TouchInfo?
+            let maxIterations = 3
+            let numElts: Int = min(history.count, maxIterations)
+            for index in 0..<numElts {
+                let touchInfo = history[index]
+                let location = touchInfo.location
+                if let previousTouch = previousTouchInfo {
+                    let dx = location.x - previousTouch.location.x
+                    let dy = location.y - previousTouch.location.y
+                    let dt = CGFloat(touchInfo.time - previousTouch.time)
+                    
+                    
+                    vx += dx / dt
+                    vy += dy / dt
+                }
+                previousTouchInfo = touchInfo
+            }
+            let count = CGFloat(numElts-1)
+            
+            return CGVector(dx: -vx/count,dy: -vy/count)
+        }
+        return CGVector(dx: 0, dy: 0)
+    }
+    
+    func distanceBasedVelocity() -> CGVector {
+        if let history = self.history, history.count > 1 {
+            var vx: CGFloat = 0.0
+            var vy: CGFloat = 0.0
+            let firstTouch = history.first
+            let lastTouch = history.last
+            let dx = lastTouch!.location.x - firstTouch!.location.x
+            let dy = lastTouch!.location.y - firstTouch!.location.y
+            vx = dx * 5
+            vy = dy * 5
+            return CGVector(dx: vx, dy: vy)
+        }
+        return CGVector(dx: 0, dy: 0)
+    }
+    
+    func touchDown(atPoint pos : CGPoint, atTime time : TimeInterval) {
+       
+        self.currentlyTouched = true
+        createBall(at: pos)
+        
         var thisNode: SKShapeNode?
         self.history = [TouchInfo(location: pos, time: time)]
         for node in nodes(at: pos) {
@@ -193,68 +255,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.history?.insert(TouchInfo(location: pos, time: time), at: 0)
     }
     
-    func touchUp(atPoint pos : CGPoint,  last touch: TimeInterval) {
+    
+    func touchUp(atPoint pos : CGPoint,  last touche: TimeInterval) {
         
-        
-        let wait = SKAction.wait(forDuration: 0.1)
-        let block = SKAction.run({
-            [unowned self] in
-            self.score += Int(0.1 * Double(self.multiplierValue * 10))
-        })
-        let sequence = SKAction.sequence([wait,block])
-        if action(forKey: "timer") == nil {
-            run(SKAction.repeatForever(sequence), withKey: "timer")
-        }
-        
-        
-        self.multiplierValue += 1
-        
-        
+        startScorer()
+
         self.touchedNode?.physicsBody?.isDynamic = true
         self.touchedNode?.physicsBody = SKPhysicsBody(circleOfRadius: self.w! )
         self.touchedNode?.physicsBody!.contactTestBitMask = (self.touchedNode?.physicsBody!.collisionBitMask)!
         self.touchedNode?.name = "ball"
         
-        if let history = self.history, history.count > 1 {
-            var vx: CGFloat = 0.0
-            var vy: CGFloat = 0.0
-            /*
-            var previousTouchInfo: TouchInfo?
-            
-            let maxIterations = 3
-            let numElts: Int = min(history.count, maxIterations)
-            for index in 0..<numElts {
-                let touchInfo = history[index]
-                let location = touchInfo.location
-                if let previousTouch = previousTouchInfo {
-                    let dx = location.x - previousTouch.location.x
-                    let dy = location.y - previousTouch.location.y
-                    //let dt = CGFloat(touchInfo.time - previousTouch.time)
-                    
-                    
-                    vx += dx / 0.016
-                    vy += dy / 0.016
-                }
-                previousTouchInfo = touchInfo
-            }
-            let count = CGFloat(numElts-1)
-            
-            let velocity = CGVector(dx: vx/count,dy: vy/count)
-             */
-            let firstTouch = history.first
-            let lastTouch = history.last
-            let dx = lastTouch!.location.x - firstTouch!.location.x
-            let dy = lastTouch!.location.y - firstTouch!.location.y
-            vx = dx * 5
-            vy = dy * 5
-            self.touchedNode?.physicsBody?.velocity = CGVector(dx: vx, dy: vy)
+        let velocity: CGVector
+        if self.difficulty == "easy" {
+            velocity = distanceBasedVelocity()
+        }else {
+            velocity = movedBasedVelocity()
         }
+        self.touchedNode?.physicsBody?.velocity = velocity
         self.history = nil
         self.touchedNode = nil
         
     }
     
+    
+    
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
         let t = touches.first!
         let pos = t.location(in: self)
         let node = self.atPoint(pos)
