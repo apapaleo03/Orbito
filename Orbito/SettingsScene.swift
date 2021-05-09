@@ -33,7 +33,6 @@ class SettingsScene: SKScene {
         addChild(background)
         
         
-        
         difficultyLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         difficultyLabel.text = "Difficulty"
         difficultyLabel.fontColor = .white
@@ -45,8 +44,7 @@ class SettingsScene: SKScene {
         easyButton.position = CGPoint(x: -120, y: 80)
         easyButton.text = "Easy"
         easyButton.name = "easy"
-        easyButton.color = .gray
-        //setColor(of: easyButton, using: difficultyMode)
+        easyButton.color = .white
         self.addChild(easyButton)
         
         easyLine = SKShapeNode()
@@ -68,7 +66,7 @@ class SettingsScene: SKScene {
         mediumButton.position = CGPoint(x: 0, y: 80)
         mediumButton.text = "Medium"
         mediumButton.name = "medium"
-        setColor(of: mediumButton, using: difficultyMode)
+        mediumButton.color = .white
         self.addChild(mediumButton)
         
         mediumLine = SKShapeNode()
@@ -90,7 +88,7 @@ class SettingsScene: SKScene {
         hardButton.position = CGPoint(x: 120, y: 80)
         hardButton.text = "Hard"
         hardButton.name = "hard"
-        setColor(of: hardButton, using: difficultyMode)
+        hardButton.color = .white
         self.addChild(hardButton)
         
         hardLine = SKShapeNode()
@@ -123,14 +121,6 @@ class SettingsScene: SKScene {
         self.addChild(resetButton)
     }
     
-    
-    func setColor(of label: SKLabelNode ,using difficulty: String){
-        if label.name == difficulty{
-            label.color = .white
-        }else{
-            label.color = .gray
-        }
-    }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first {
@@ -145,22 +135,24 @@ class SettingsScene: SKScene {
                 }
             }else if node.name == "reset"{
                 UserDefaults.standard.removeObject(forKey: "scoreboard")
-            }else if node.name == "easy" || node.name == "medium" || node.name == "hard" {
+            }else if node.name == "easy"  {
                 self.difficultyMode = node.name!
                 UserDefaults.standard.set(node.name!, forKey: "difficulty")
-                if difficultyMode == "easy"{
-                    easyLine.isHidden = false
-                    mediumLine.isHidden = true
-                    hardLine.isHidden = true
-                }else if difficultyMode == "medium"{
-                    easyLine.isHidden = true
-                    mediumLine.isHidden = false
-                    hardLine.isHidden = true
-                }else if difficultyMode == "hard"{
-                    easyLine.isHidden = true
-                    mediumLine.isHidden = true
-                    hardLine.isHidden = false
-                }
+                easyLine.isHidden = false
+                mediumLine.isHidden = true
+                hardLine.isHidden = true
+            }else if node.name == "medium" {
+                self.difficultyMode = node.name!
+                UserDefaults.standard.set(node.name!, forKey: "difficulty")
+                easyLine.isHidden = true
+                mediumLine.isHidden = false
+                hardLine.isHidden = true
+            }else if node.name == "hard"{
+                self.difficultyMode = node.name!
+                UserDefaults.standard.set(node.name!, forKey: "difficulty")
+                easyLine.isHidden = true
+                mediumLine.isHidden = true
+                hardLine.isHidden = false
             }
         }
     }

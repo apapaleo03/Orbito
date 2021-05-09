@@ -42,7 +42,6 @@ class ScoreboardScene: SKScene {
         
         
         let highScores = defaults.object(forKey: "scoreboard") as? [Int] ?? []
-        print(highScores)
         var start = 230
         for score in highScores.reversed(){
             displayScore(at: CGPoint(x: 0, y: start), score: score)

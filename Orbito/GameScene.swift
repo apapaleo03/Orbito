@@ -9,6 +9,16 @@ import SpriteKit
 import GameplayKit
 import Foundation
 
+extension SKSpriteNode {
+    func drawBorder(color: UIColor, width: CGFloat) {
+        let shapeNode = SKShapeNode(rect: frame)
+        shapeNode.fillColor = .clear
+        shapeNode.strokeColor = color
+        shapeNode.lineWidth = width
+        addChild(shapeNode)
+    }
+}
+
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private var ball : SKShapeNode?
@@ -21,6 +31,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let gravity = SKFieldNode.radialGravityField()
     let gravityCategory : UInt32 = 0x1 << 0
     var currentlyTouched : Bool?
+    var gameOverBox: SKSpriteNode!
+    var mainMenuButton: SKLabelNode!
+    var restartButton: SKLabelNode!
 
     
     
@@ -93,6 +106,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         createHighScoreLabels(x: -(self.size.width/2-140), y: self.size.height/2-97)
         createScoreLabels(x: 0, y : self.size.height/2-97)
         createMultiplierLabels(x: self.size.width/2-140, y: self.size.height/2-97)
+        
+        gameOverBox = SKSpriteNode(color: .black, size: CGSize(width: self.size.width*0.7,height: self.size.height*0.3))
+        gameOverBox.position = CGPoint(x:0, y:0)
+        gameOverBox.drawBorder(color: .white, width: 3)
+        gameOverBox.isHidden = true
+        self.addChild(gameOverBox)
+        
+        mainMenuButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        mainMenuButton.fontColor = .white
+        mainMenuButton.fontSize = 30
+        mainMenuButton.position = CGPoint(x: 0, y: -40)
+        mainMenuButton.text = "Main Menu"
+        mainMenuButton.name = "mainMenu"
+        gameOverBox.addChild(mainMenuButton)
+        
+        restartButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        restartButton.fontColor = .white
+        restartButton.fontSize = 30
+        restartButton.position = CGPoint(x: 0, y: 40)
+        restartButton.text = "Restart"
+        restartButton.name = "restart"
+        gameOverBox.addChild(restartButton)
         
         
         self.staticNodes = self.children.count
@@ -281,6 +316,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.history = nil
         self.touchedNode = nil
         
+        
     }
     
     
@@ -291,15 +327,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let t = touches.first!
         let pos = t.location(in: self)
         let node = self.atPoint(pos)
-        if node.name != "highscore"{
-            self.touchDown(atPoint: t.location(in: self), atTime: t.timestamp)
-        }else{
+        if node.name == "mainMenu"{
             if let view = view {
                 let transition:SKTransition = SKTransition.doorsCloseHorizontal(withDuration: 1)
                 let scene = SKScene(fileNamed: "MenuScene")
                 scene?.scaleMode = .aspectFill
                 view.presentScene(scene!, transition: transition)
             }
+            
+        }else{
+            if gameOverBox.isHidden{
+                self.touchDown(atPoint: t.location(in: self), atTime: t.timestamp)
+            }
+                
         }
     }
     
@@ -308,8 +348,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let t = touches.first!
+        let pos = t.location(in: self)
+        let node = self.atPoint(pos)
+        if node.name == "restart"{
+            gameOverBox.isHidden = true
+        }else{
+            if gameOverBox.isHidden{
+                for t in touches { self.touchUp(atPoint: t.location(in: self), last:t.timestamp) }
+            }
+        }
         
-        for t in touches { self.touchUp(atPoint: t.location(in: self), last:t.timestamp) }
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -358,6 +407,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     destroy(ball: child)
                 }
             }
+            gameOverBox.isHidden = false
         }
         
     }
