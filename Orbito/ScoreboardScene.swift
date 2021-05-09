@@ -17,7 +17,12 @@ class ScoreboardScene: SKScene {
     
 
     override func didMove(to view: SKView) {
-        self.backgroundColor = UIColor(red: 9.0/255, green: 69.0/255, blue: 84.0/255, alpha: 1)
+        let background = SKSpriteNode(imageNamed: "orbitoBackground.jpeg")
+        background.position = CGPoint(x: 0, y: 0)
+        background.scale(to: self.size)
+        background.blendMode = .replace
+        background.zPosition = -1
+        addChild(background)
         
         backButton = SKLabelNode(fontNamed: "Baskerville-Bold")
         backButton.text = "Back"

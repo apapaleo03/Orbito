@@ -6,6 +6,7 @@
 //
 
 import SpriteKit
+import GameplayKit
 
 class MenuScene: SKScene {
 
@@ -14,6 +15,12 @@ class MenuScene: SKScene {
     var settingsButton : SKLabelNode!
 
     override func didMove(to view: SKView) {
+        let background = SKSpriteNode(imageNamed: "orbitoBackground.jpeg")
+        background.position = CGPoint(x: 0, y: 0)
+        background.scale(to: self.size)
+        background.blendMode = .replace
+        background.zPosition = -1
+        addChild(background)
         
         playButtonLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
         playButtonLabel.text = "Play"

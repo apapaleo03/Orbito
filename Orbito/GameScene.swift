@@ -60,7 +60,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         
         self.view?.isMultipleTouchEnabled = false
-        self.backgroundColor = UIColor(red: 9.0/255, green: 69.0/255, blue: 84.0/255, alpha: 1)
+        let background = SKSpriteNode(imageNamed: "orbitoBackground.jpeg")
+        background.position = CGPoint(x: 0, y: 0)
+        background.scale(to: self.size)
+        background.blendMode = .replace
+        background.zPosition = -1
+        addChild(background)
         w = (self.size.width + self.size.height) * 0.01
         
         // Define gravity
@@ -113,6 +118,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.ball?.physicsBody?.restitution = 0.4
         self.ball?.physicsBody?.mass = 1
         self.ball?.name = "ball"
+    }
+    func createBall(at pos: CGPoint){
+        if let ball = self.ball?.copy() as? SKShapeNode {
+            ball.physicsBody?.velocity = CGVector(dx:0,dy:0)
+            ball.physicsBody?.isDynamic = false
+            ball.position = pos
+            ball.strokeColor = RandomColor()
+            ball.name = "protoball"
+            self.addChild(ball)
+        }
     }
     
     func createScoreLabels(x: CGFloat, y: CGFloat){
@@ -167,16 +182,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(multiplierValueLabel)
     }
     
-    func createBall(at pos: CGPoint){
-        if let ball = self.ball?.copy() as? SKShapeNode {
-            ball.physicsBody?.velocity = CGVector(dx:0,dy:0)
-            ball.physicsBody?.isDynamic = false
-            ball.position = pos
-            ball.strokeColor = RandomColor()
-            ball.name = "protoball"
-            self.addChild(ball)
-        }
-    }
+    
     
     func startScorer() {
         let wait = SKAction.wait(forDuration: 0.1)
