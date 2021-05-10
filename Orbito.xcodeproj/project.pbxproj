@@ -23,6 +23,9 @@
 		01F18DE82642EF420024EF2A /* ScoreboardScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 01F18DE72642EF420024EF2A /* ScoreboardScene.sks */; };
 		01F18DEA264441920024EF2A /* OrbitoLaunch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01F18DE9264441920024EF2A /* OrbitoLaunch.storyboard */; };
 		01F18DED264854490024EF2A /* orbitoBackground.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 01F18DEC264854490024EF2A /* orbitoBackground.jpeg */; };
+		01F18DEF2648CFF30024EF2A /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 01F18DEE2648CFF30024EF2A /* spark.png */; };
+		01F18DF12648CFFB0024EF2A /* mainImpact.sks in Resources */ = {isa = PBXBuildFile; fileRef = 01F18DF02648CFFB0024EF2A /* mainImpact.sks */; };
+		01F18DF32648D4B80024EF2A /* secondaryImpact.sks in Resources */ = {isa = PBXBuildFile; fileRef = 01F18DF22648D4B80024EF2A /* secondaryImpact.sks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +47,9 @@
 		01F18DE72642EF420024EF2A /* ScoreboardScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = ScoreboardScene.sks; sourceTree = "<group>"; };
 		01F18DE9264441920024EF2A /* OrbitoLaunch.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = OrbitoLaunch.storyboard; sourceTree = "<group>"; };
 		01F18DEC264854490024EF2A /* orbitoBackground.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = orbitoBackground.jpeg; sourceTree = "<group>"; };
+		01F18DEE2648CFF30024EF2A /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
+		01F18DF02648CFFB0024EF2A /* mainImpact.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = mainImpact.sks; sourceTree = "<group>"; };
+		01F18DF22648D4B80024EF2A /* secondaryImpact.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = secondaryImpact.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +106,9 @@
 		01F18DEB264854380024EF2A /* Content */ = {
 			isa = PBXGroup;
 			children = (
+				01F18DEE2648CFF30024EF2A /* spark.png */,
+				01F18DF02648CFFB0024EF2A /* mainImpact.sks */,
+				01F18DF22648D4B80024EF2A /* secondaryImpact.sks */,
 				01F18DEC264854490024EF2A /* orbitoBackground.jpeg */,
 			);
 			path = Content;
@@ -163,11 +172,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				01F18DED264854490024EF2A /* orbitoBackground.jpeg in Resources */,
+				01F18DEF2648CFF30024EF2A /* spark.png in Resources */,
+				01F18DF32648D4B80024EF2A /* secondaryImpact.sks in Resources */,
 				01F18DD0263C3B6A0024EF2A /* Main.storyboard in Resources */,
 				01F18DE22641ECAF0024EF2A /* SettingsScene.sks in Resources */,
 				01F18DC7263C3B6A0024EF2A /* GameScene.sks in Resources */,
 				01F18DD2263C3B6D0024EF2A /* Assets.xcassets in Resources */,
 				01F18DDE263E1E960024EF2A /* MenuScene.sks in Resources */,
+				01F18DF12648CFFB0024EF2A /* mainImpact.sks in Resources */,
 				01F18DE82642EF420024EF2A /* ScoreboardScene.sks in Resources */,
 				01F18DEA264441920024EF2A /* OrbitoLaunch.storyboard in Resources */,
 			);

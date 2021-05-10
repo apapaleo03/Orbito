@@ -390,6 +390,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func collisionBetween(ball: SKNode, object: SKNode) {
         
         if object.name == "anchor" || object.name == "ball" {
+            if let fireParticles = SKEmitterNode(fileNamed: "mainImpact") {
+                fireParticles.position = CGPoint(x: (ball.position.x + object.position.x)/2, y: (ball.position.y + object.position.y)/2)
+                addChild(fireParticles)
+            }
             if action(forKey: "timer") != nil {removeAction(forKey: "timer")}
             
             if self.score > self.highScoreValue{
@@ -402,17 +406,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             self.score = 0
             self.multiplierValue = 0
+            if object.name == "ball"{
+                ball.removeFromParent()
+                object.removeFromParent()
+            }else{
+                ball.removeFromParent()
+            }
             for child in self.children{
                 if child.name == "ball"{
                     destroy(ball: child)
                 }
             }
-            gameOverBox.isHidden = false
+            
+            //gameOverBox.isHidden = false
         }
         
     }
     
     func destroy(ball:SKNode){
+        if let fireParticles = SKEmitterNode(fileNamed: "secondaryImpact") {
+            fireParticles.position = ball.position
+            addChild(fireParticles)
+        }
         ball.removeFromParent()
     }
     
