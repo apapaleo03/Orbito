@@ -34,6 +34,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var gameOverBox: SKSpriteNode!
     var mainMenuButton: SKLabelNode!
     var restartButton: SKLabelNode!
+    var isGameOver = false
 
     
     
@@ -232,6 +233,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.multiplierValue += 1
     }
     
+    func showGameOver() {
+        for child in self.children{
+            if child.name == "protoball"{
+                destroy(ball: child)
+            }
+        }
+        let wait = SKAction.wait(forDuration: 1)
+        let appear = SKAction.unhide()
+        let sequence = SKAction.sequence([wait,appear])
+        gameOverBox.run(sequence)
+    }
+    
     func movedBasedVelocity() -> CGVector {
         if let history = self.history, history.count > 1 {
             var vx: CGFloat = 0.0
@@ -337,14 +350,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
         }else{
             if gameOverBox.isHidden{
-                self.touchDown(atPoint: t.location(in: self), atTime: t.timestamp)
+                if !isGameOver{
+                    self.touchDown(atPoint: t.location(in: self), atTime: t.timestamp)
+                }
             }
                 
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self), atTime: t.timestamp) }
+        if !isGameOver{
+            for t in touches { self.touchMoved(toPoint: t.location(in: self), atTime: t.timestamp) }
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -353,9 +370,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let node = self.atPoint(pos)
         if node.name == "restart"{
             gameOverBox.isHidden = true
+            self.isGameOver = false
         }else{
             if gameOverBox.isHidden{
-                for t in touches { self.touchUp(atPoint: t.location(in: self), last:t.timestamp) }
+                if !isGameOver{
+                    for t in touches { self.touchUp(atPoint: t.location(in: self), last:t.timestamp) }
+                }
             }
         }
         
@@ -390,6 +410,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func collisionBetween(ball: SKNode, object: SKNode) {
         
         if object.name == "anchor" || object.name == "ball" {
+            self.isGameOver = true
             if let fireParticles = SKEmitterNode(fileNamed: "mainImpact") {
                 fireParticles.position = CGPoint(x: (ball.position.x + object.position.x)/2, y: (ball.position.y + object.position.y)/2)
                 addChild(fireParticles)
@@ -418,7 +439,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
             
-            //gameOverBox.isHidden = false
+            showGameOver()
         }
         
     }
