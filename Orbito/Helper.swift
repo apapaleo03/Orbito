@@ -9,6 +9,7 @@
 
 import Foundation
 import UIKit
+import Darwin
 extension Double {
     func roundToPlaces(places:Int) -> Double {
         let divisor = pow(10.0, Double(places))
@@ -43,4 +44,53 @@ func RandomCGFloat(min: Float, max: Float) -> CGFloat {
 func RandomColor() -> UIColor {
     return UIColor(red: RandomCGFloat(), green: RandomCGFloat(), blue: RandomCGFloat(), alpha: 1)
 }
-import Foundation
+
+func mapToEdge(point:CGPoint, screenSize: CGSize) -> CGPoint {
+    let width = screenSize.width/2 - 100
+    let height = screenSize.height/2 - 100
+    let x = point.x
+    let y = point.y
+    let theta = CGFloat((atan2(Double(y) , Double(x)) + 2*Double.pi).truncatingRemainder(dividingBy: 2*Double.pi))
+    print(theta)
+    let topRight = atan2(height, width)
+    let bottomRight = CGFloat(2*Double.pi) - topRight
+    let topLeft = CGFloat(Double.pi) - topRight
+    let bottomLeft = CGFloat(Double.pi) + topRight
+    let newX: CGFloat
+    let newY: CGFloat
+    
+
+    if ((theta < topRight) || (theta > bottomRight)) || ((theta > topLeft) && (theta < bottomLeft)){
+        newX = width*x/abs(x)
+        newY = newX*tan(theta)
+        print("L or R")
+    }else if theta == topRight{
+        newX = width
+        newY = height
+    }else if theta == topLeft{
+        newX = -width
+        newY = height
+    }else if theta == bottomLeft{
+        newX = -width
+        newY = -height
+    }else if theta == bottomRight{
+        newX = width
+        newY = -height
+    }else{
+        print("T or B")
+        newY = height*y/abs(y)
+        let newXTemp = newY/tan(theta)
+        if newXTemp > width{
+            newX = 0.0
+        }
+        else{
+            newX = newXTemp
+        }
+        
+    }
+    
+    return CGPoint(x: newX,y: newY)
+
+}
+
+

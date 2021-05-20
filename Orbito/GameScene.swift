@@ -35,8 +35,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var mainMenuButton: SKLabelNode!
     var restartButton: SKLabelNode!
     var isGameOver = false
-
+    var ballCount = 0
+    var ballsLeft = 10
     
+    
+    var ballsLabel: SKLabelNode!
+    var ballsValueLabel: SKLabelNode!
+    var balls = 10 {
+        didSet {
+            ballsValueLabel.text = "\(balls)"
+        }
+    }
+
     
     struct TouchInfo {
         var location: CGPoint
@@ -72,7 +82,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func didMove(to view: SKView) {
-        
+        print(self.size)
         self.view?.isMultipleTouchEnabled = false
         let background = SKSpriteNode(imageNamed: "orbitoBackground.jpeg")
         background.position = CGPoint(x: 0, y: 0)
@@ -102,11 +112,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
       
         // Create orbiting ball
         defineBall()
-        self.ball?.physicsBody?.fieldBitMask = gravityCategory
+        
         
         createHighScoreLabels(x: -(self.size.width/2-140), y: self.size.height/2-97)
-        createScoreLabels(x: 0, y : self.size.height/2-97)
+        createScoreLabels(x: -(self.size.width/10), y : self.size.height/2-97)
         createMultiplierLabels(x: self.size.width/2-140, y: self.size.height/2-97)
+        createBallsLabels(x: (self.size.width/10), y: self.size.height/2-97)
         
         gameOverBox = SKSpriteNode(color: .black, size: CGSize(width: self.size.width*0.7,height: self.size.height*0.3))
         gameOverBox.position = CGPoint(x:0, y:0)
@@ -148,11 +159,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(anchorPoint)
     }
     
+    func createTracker(at pos: CGPoint, called name: String, colored color: UIColor){
+        // Create point at which ball orbits
+        
+        let tracker = SKShapeNode.init(circleOfRadius: self.w!/4)
+        tracker.name = name
+        tracker.position = pos
+        tracker.strokeColor = color
+        self.addChild(tracker)
+    }
+    
     func defineBall()  {
         self.ball = SKShapeNode.init(circleOfRadius: self.w!)
         self.ball?.lineWidth = 2.5
         self.ball?.physicsBody?.restitution = 0.4
         self.ball?.physicsBody?.mass = 1
+        self.ball?.physicsBody?.fieldBitMask = gravityCategory
         self.ball?.name = "ball"
     }
     func createBall(at pos: CGPoint){
@@ -163,6 +185,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ball.strokeColor = RandomColor()
             ball.name = "protoball"
             self.addChild(ball)
+            
         }
     }
     
@@ -180,6 +203,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreValueLabel.position = CGPoint(x: x, y: y - 20)
         scoreValueLabel.text = "\(score)"
         self.addChild(scoreValueLabel)
+    }
+    
+    func createBallsLabels(x: CGFloat, y: CGFloat){
+        ballsLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
+        ballsLabel.fontColor = .white
+        ballsLabel.fontSize = 24
+        ballsLabel.position = CGPoint(x: x, y: y + 20)
+        ballsLabel.text = "Balls Left"
+        self.addChild(ballsLabel)
+        
+        ballsValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
+        ballsValueLabel.fontColor = .white
+        ballsValueLabel.fontSize = 24
+        ballsValueLabel.position = CGPoint(x: x, y: y - 20)
+        ballsValueLabel.text = "\(balls)"
+        self.addChild(ballsValueLabel)
     }
     
     func createHighScoreLabels(x: CGFloat, y: CGFloat){
@@ -245,7 +284,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         gameOverBox.run(sequence)
     }
     
-    func movedBasedVelocity() -> CGVector {
+    func speedBasedVelocity() -> CGVector {
         if let history = self.history, history.count > 1 {
             var vx: CGFloat = 0.0
             var vy: CGFloat = 0.0
@@ -317,24 +356,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.touchedNode?.physicsBody?.isDynamic = true
         self.touchedNode?.physicsBody = SKPhysicsBody(circleOfRadius: self.w! )
         self.touchedNode?.physicsBody!.contactTestBitMask = (self.touchedNode?.physicsBody!.collisionBitMask)!
-        self.touchedNode?.name = "ball"
+        self.touchedNode?.name = "ball \(ballCount)"
         
         let velocity: CGVector
         if self.difficulty == "easy" {
             velocity = distanceBasedVelocity()
         }else {
-            velocity = movedBasedVelocity()
+            velocity = speedBasedVelocity()
         }
         self.touchedNode?.physicsBody?.velocity = velocity
         self.history = nil
         self.touchedNode = nil
+        ballCount += 1
+        balls -= 1
         
         
     }
     
-    
-    
-    
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         let t = touches.first!
@@ -350,7 +389,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
         }else{
             if gameOverBox.isHidden{
-                if !isGameOver{
+                if !isGameOver && ballCount < 10{
                     self.touchDown(atPoint: t.location(in: self), atTime: t.timestamp)
                 }
             }
@@ -369,11 +408,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let pos = t.location(in: self)
         let node = self.atPoint(pos)
         if node.name == "restart"{
+            self.ballCount = 0
+            self.ballsLeft = 10
+            self.balls = 10
             gameOverBox.isHidden = true
             self.isGameOver = false
         }else{
             if gameOverBox.isHidden{
-                if !isGameOver{
+                if !isGameOver && ballCount < 10{
                     for t in touches { self.touchUp(atPoint: t.location(in: self), last:t.timestamp) }
                 }
             }
@@ -388,67 +430,90 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func update(_ currentTime: TimeInterval) {
         let nodes = self.children
-        if nodes.count - self.staticNodes! >= 10 {
-            let width = self.size.width
-            let height = self.size.height
-            var outOfScene = 0
-            for child in nodes{
-                if child.name == "ball" {
-                    if abs(child.position.x) > width || abs(child.position.y) > height {
-                        outOfScene += 1
-                    }
-                }
-                if outOfScene >= 10 {
-                    collisionBetween(ball: child, object: child)
-                    return
-                }
+        var nodeNames : [String] = []
+        for child in nodes{
+            if let name = child.name {
+                nodeNames.append(name)
             }
         }
-        
+        //let width = self.size.width
+        //let height = self.size.height
+        //var tracked: [String] = []
+        //var trackers: [String] = []
+        for child in nodes{
+            if child.name == "ball 0" {
+                //let name = child.name!
+                //let number = name.components(separatedBy: " ")[0]
+                //tracked.append(child.name!)
+                let trackerName = "t1"//t\(number)"
+                if nodeNames.contains(trackerName){
+                    let tracker = self.childNode(withName: trackerName) as! SKShapeNode
+                    tracker.position = mapToEdge(point: child.position, screenSize: self.size)
+                    //print(tracker.name!)
+                }
+                else
+                {
+                    createTracker(at: mapToEdge(point: child.position, screenSize: self.size), called: trackerName, colored: .white)
+                    //print("created tracker")
+                }
+            }
+            
+        }
+        //print(tracked)
     }
     
     func collisionBetween(ball: SKNode, object: SKNode) {
         
-        if object.name == "anchor" || object.name == "ball" {
-            self.isGameOver = true
-            if let fireParticles = SKEmitterNode(fileNamed: "mainImpact") {
+        if object.name == "anchor" || object.name!.contains("ball") {
+            
+            if let fireParticles = SKEmitterNode(fileNamed: "secondaryImpact") {
                 fireParticles.position = CGPoint(x: (ball.position.x + object.position.x)/2, y: (ball.position.y + object.position.y)/2)
                 addChild(fireParticles)
             }
-            if action(forKey: "timer") != nil {removeAction(forKey: "timer")}
-            
-            if self.score > self.highScoreValue{
-                self.highScoreValue = self.score
-                self.scoreBoardArray.append(self.highScoreValue)
-                if self.scoreBoardArray.count > 10{
-                    self.scoreBoardArray.removeFirst()
-                }
-                UserDefaults.standard.set(self.scoreBoardArray, forKey: "scoreboard")
-            }
-            self.score = 0
-            self.multiplierValue = 0
-            if object.name == "ball"{
+            if object.name!.contains("ball"){
+                ballsLeft -= 2
+                multiplierValue -= 2
                 ball.removeFromParent()
                 object.removeFromParent()
             }else{
+                ballsLeft -= 1
+                multiplierValue -= 1
                 ball.removeFromParent()
             }
-            for child in self.children{
-                if child.name == "ball"{
-                    destroy(ball: child)
-                }
-            }
             
-            showGameOver()
+            if ballsLeft == 0{
+                if action(forKey: "timer") != nil {removeAction(forKey: "timer")}
+                
+                if self.score > self.highScoreValue{
+                    self.highScoreValue = self.score
+                    self.scoreBoardArray.append(self.highScoreValue)
+                    if self.scoreBoardArray.count > 10{
+                        self.scoreBoardArray.removeFirst()
+                    }
+                    UserDefaults.standard.set(self.scoreBoardArray, forKey: "scoreboard")
+                }
+                self.score = 0
+                self.multiplierValue = 0
+                
+                /*for child in self.children{
+                    if child.name == "ball"{
+                        destroy(ball: child)
+                    }
+                }*/
+                
+                self.isGameOver = true
+                showGameOver()
+            }
         }
         
     }
     
     func destroy(ball:SKNode){
+        /*
         if let fireParticles = SKEmitterNode(fileNamed: "secondaryImpact") {
             fireParticles.position = ball.position
             addChild(fireParticles)
-        }
+        }*/
         ball.removeFromParent()
     }
     
@@ -456,9 +521,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         guard let nodeA = contact.bodyA.node else { return }
         guard let nodeB = contact.bodyB.node else { return }
         
-        if nodeA.name == "ball" {
+        if nodeA.name!.contains("ball") {
             collisionBetween(ball: nodeA, object: nodeB)
-        } else if nodeB.name == "ball" {
+        } else if nodeB.name!.contains("ball") {
             collisionBetween(ball:nodeB, object: nodeA)
         }
     }
