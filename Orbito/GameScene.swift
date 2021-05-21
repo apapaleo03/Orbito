@@ -37,6 +37,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var isGameOver = false
     var ballCount = 0
     var ballsLeft = 10
+    var aimLine : SKShapeNode?
+    var pathToDraw : CGMutablePath!
     
     
     var ballsLabel: SKLabelNode!
@@ -82,7 +84,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func didMove(to view: SKView) {
-        print(self.size)
         self.view?.isMultipleTouchEnabled = false
         let background = SKSpriteNode(imageNamed: "orbitoBackground.jpeg")
         background.position = CGPoint(x: 0, y: 0)
@@ -166,6 +167,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         tracker.name = name
         tracker.position = pos
         tracker.strokeColor = color
+        tracker.fillColor = color
         self.addChild(tracker)
     }
     
@@ -341,11 +343,43 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         self.touchedNode = thisNode
         
+        aimLine = SKShapeNode()
+        
+        pathToDraw = CGMutablePath()
+        
+        pathToDraw.move(to: pos)
+        pathToDraw.addLine(to: pos)
+        aimLine!.path = pathToDraw
+        aimLine!.strokeColor = SKColor.white
+        aimLine!.lineWidth = 3
+        aimLine!.name = "aimLine"
+       
+        addChild(aimLine!)
+        
     }
     
     func touchMoved(toPoint pos : CGPoint, atTime time: TimeInterval) {
         //self.touchedNode?.position = pos
+        //print(pos)
         self.history?.insert(TouchInfo(location: pos, time: time), at: 0)
+        if let history = self.history, history.count > 1{
+            
+            let firstTouch = history.first!.location
+            
+            let lastTouch = history.last!.location
+            
+            let x = lastTouch.x - (firstTouch.x - lastTouch.x)
+            let y = lastTouch.y - (firstTouch.y - lastTouch.y)
+            
+            pathToDraw = CGMutablePath()
+            
+            pathToDraw.move(to: history.last!.location)
+            pathToDraw.addLine(to: CGPoint(x: x,y: y))
+            self.aimLine!.path = pathToDraw
+        }
+        
+        
+        
     }
     
     
@@ -369,6 +403,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.touchedNode = nil
         ballCount += 1
         balls -= 1
+        self.aimLine?.removeFromParent()
         
         
     }
@@ -428,38 +463,59 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    override func update(_ currentTime: TimeInterval) {
+    fileprivate func track() {
         let nodes = self.children
-        var nodeNames : [String] = []
+        var ballNames : [String] = []
+        var trackerNames: [String] = []
+        var ballNumbers: [String] = []
+        var trackerNumbers: [String] = []
+        let width = self.size.width / 2
+        let height = self.size.height / 2
         for child in nodes{
             if let name = child.name {
-                nodeNames.append(name)
+                if name.contains("ball"){
+                    if (abs(child.position.x) > width - 75) || (abs(child.position.y) > height - 75) {
+                        ballNames.append(name)
+                        ballNumbers.append(name.components(separatedBy: " ")[1])
+                    }
+                }
+                if name.contains("tracker"){
+                    trackerNames.append(name)
+                    trackerNumbers.append(name.components(separatedBy: " ")[1])
+                }
             }
         }
-        //let width = self.size.width
-        //let height = self.size.height
-        //var tracked: [String] = []
-        //var trackers: [String] = []
-        for child in nodes{
-            if child.name == "ball 0" {
-                //let name = child.name!
-                //let number = name.components(separatedBy: " ")[0]
-                //tracked.append(child.name!)
-                let trackerName = "t1"//t\(number)"
-                if nodeNames.contains(trackerName){
+        
+        for tracker in trackerNumbers{
+            if !ballNumbers.contains(tracker){
+                self.childNode(withName: "tracker \(tracker)")?.removeFromParent()
+            }
+        }
+        
+        for name in ballNames{
+            if let ball = self.childNode(withName: name) as? SKShapeNode{
+                let number = name.components(separatedBy: " ")[1]
+                let color = ball.strokeColor
+                let trackerName = "tracker \(number)"
+                if trackerNames.contains(trackerName){
                     let tracker = self.childNode(withName: trackerName) as! SKShapeNode
-                    tracker.position = mapToEdge(point: child.position, screenSize: self.size)
-                    //print(tracker.name!)
+                    tracker.position = mapToEdge(point: ball.position, screenSize: self.size)
+                    
                 }
                 else
                 {
-                    createTracker(at: mapToEdge(point: child.position, screenSize: self.size), called: trackerName, colored: .white)
-                    //print("created tracker")
+                    createTracker(at: mapToEdge(point: ball.position, screenSize: self.size), called: trackerName, colored: color)
+                    
                 }
             }
             
         }
-        //print(tracked)
+    }
+    
+    override func update(_ currentTime: TimeInterval) {
+        if difficulty == "easy"{
+            track()
+        }
     }
     
     func collisionBetween(ball: SKNode, object: SKNode) {

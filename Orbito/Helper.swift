@@ -45,13 +45,16 @@ func RandomColor() -> UIColor {
     return UIColor(red: RandomCGFloat(), green: RandomCGFloat(), blue: RandomCGFloat(), alpha: 1)
 }
 
+func invertCoords(_ pos: CGPoint) -> CGPoint{
+    return CGPoint(x: -pos.x,y: -pos.y)
+}
+
 func mapToEdge(point:CGPoint, screenSize: CGSize) -> CGPoint {
-    let width = screenSize.width/2 - 100
-    let height = screenSize.height/2 - 100
+    let width = screenSize.width/2 - 75
+    let height = screenSize.height/2 - 75
     let x = point.x
     let y = point.y
     let theta = CGFloat((atan2(Double(y) , Double(x)) + 2*Double.pi).truncatingRemainder(dividingBy: 2*Double.pi))
-    print(theta)
     let topRight = atan2(height, width)
     let bottomRight = CGFloat(2*Double.pi) - topRight
     let topLeft = CGFloat(Double.pi) - topRight
@@ -63,7 +66,6 @@ func mapToEdge(point:CGPoint, screenSize: CGSize) -> CGPoint {
     if ((theta < topRight) || (theta > bottomRight)) || ((theta > topLeft) && (theta < bottomLeft)){
         newX = width*x/abs(x)
         newY = newX*tan(theta)
-        print("L or R")
     }else if theta == topRight{
         newX = width
         newY = height
@@ -77,7 +79,6 @@ func mapToEdge(point:CGPoint, screenSize: CGSize) -> CGPoint {
         newX = width
         newY = -height
     }else{
-        print("T or B")
         newY = height*y/abs(y)
         let newXTemp = newY/tan(theta)
         if newXTemp > width{
