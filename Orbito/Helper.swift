@@ -10,12 +10,52 @@
 import Foundation
 import UIKit
 import Darwin
+import SpriteKit
+
+let gameFont = "Baskerville-Bold"
+
+extension SKSpriteNode {
+    func drawBorder(color: UIColor, width: CGFloat) {
+        let shapeNode = SKShapeNode(rect: frame)
+        shapeNode.fillColor = .clear
+        shapeNode.strokeColor = color
+        shapeNode.lineWidth = width
+        addChild(shapeNode)
+    }
+}
+
+
 extension Double {
     func roundToPlaces(places:Int) -> Double {
         let divisor = pow(10.0, Double(places))
         return (self * divisor).rounded() / divisor
     }
 }
+
+extension Array where Element == Int{
+    mutating func addScore(newScore:Int){
+        
+        var indexFound = false
+        
+        for i in 0..<self.count{
+            if newScore < self.index(after: i){
+                insert(newScore, at: i-1)
+                indexFound = true
+                break
+            }
+        }
+        
+        if !indexFound{
+            append(newScore)
+        }
+        
+        if self.count > 5{
+            removeFirst()
+        }
+    }
+}
+
+
 func RandomInt(min: Int, max: Int) -> Int {
     if max < min { return min }
     return Int(arc4random_uniform(UInt32((max - min) + 1))) + min
@@ -79,7 +119,8 @@ func mapToEdge(point:CGPoint, screenSize: CGSize) -> CGPoint {
         newX = width
         newY = -height
     }else{
-        newY = height*y/abs(y)
+        newY = height*y/abs(y) - 50
+        
         let newXTemp = newY/tan(theta)
         if newXTemp > width{
             newX = 0.0

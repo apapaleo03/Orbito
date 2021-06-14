@@ -9,17 +9,9 @@ import SpriteKit
 import GameplayKit
 import Foundation
 
-extension SKSpriteNode {
-    func drawBorder(color: UIColor, width: CGFloat) {
-        let shapeNode = SKShapeNode(rect: frame)
-        shapeNode.fillColor = .clear
-        shapeNode.strokeColor = color
-        shapeNode.lineWidth = width
-        addChild(shapeNode)
-    }
-}
 
-class GameScene: SKScene, SKPhysicsContactDelegate {
+
+class GameScene: SKScene, SKPhysicsContactDelegate, UITextFieldDelegate {
     
     private var ball : SKShapeNode?
     var staticNodes : Int?
@@ -39,7 +31,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var ballsLeft = 10
     var aimLine : SKShapeNode?
     var pathToDraw : CGMutablePath!
+    var scoreboardMessage: SKLabelNode!
+    var highScoreMessage: SKLabelNode!
+    var highScoreText : UITextField!
     
+    enum message: String {
+        case bad = "Not quite there, keep trying!"
+        case good = "You've made the leaderboard!"
+        case great = "Wow! You got the high score!"
+    }
     
     var ballsLabel: SKLabelNode!
     var ballsValueLabel: SKLabelNode!
@@ -114,33 +114,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Create orbiting ball
         defineBall()
         
-        
-        createHighScoreLabels(x: -(self.size.width/2-140), y: self.size.height/2-97)
-        createScoreLabels(x: -(self.size.width/10), y : self.size.height/2-97)
-        createMultiplierLabels(x: self.size.width/2-140, y: self.size.height/2-97)
-        createBallsLabels(x: (self.size.width/10), y: self.size.height/2-97)
-        
-        gameOverBox = SKSpriteNode(color: .black, size: CGSize(width: self.size.width*0.7,height: self.size.height*0.3))
-        gameOverBox.position = CGPoint(x:0, y:0)
-        gameOverBox.drawBorder(color: .white, width: 3)
-        gameOverBox.isHidden = true
-        self.addChild(gameOverBox)
-        
-        mainMenuButton = SKLabelNode(fontNamed: "Baskerville-Bold")
-        mainMenuButton.fontColor = .white
-        mainMenuButton.fontSize = 30
-        mainMenuButton.position = CGPoint(x: 0, y: -40)
-        mainMenuButton.text = "Main Menu"
-        mainMenuButton.name = "mainMenu"
-        gameOverBox.addChild(mainMenuButton)
-        
-        restartButton = SKLabelNode(fontNamed: "Baskerville-Bold")
-        restartButton.fontColor = .white
-        restartButton.fontSize = 30
-        restartButton.position = CGPoint(x: 0, y: 40)
-        restartButton.text = "Restart"
-        restartButton.name = "restart"
-        gameOverBox.addChild(restartButton)
+        createLabels(highScorePos: CGPoint(x: -(self.size.width/2-140), y: self.size.height/2-97),
+                     scorePos: CGPoint(x: -(self.size.width/10), y : self.size.height/2-97),
+                     ballsLeftPos: CGPoint(x: self.size.width/2-140, y: self.size.height/2-97),
+                     multiplierPos: CGPoint(x: (self.size.width/10), y: self.size.height/2-97)
+        )
+       
+        createGameOverBox()
         
         
         self.staticNodes = self.children.count
@@ -191,77 +171,112 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func createScoreLabels(x: CGFloat, y: CGFloat){
-        scoreLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
-        scoreLabel.fontColor = .white
-        scoreLabel.fontSize = 24
-        scoreLabel.position = CGPoint(x: x, y: y + 20)
-        scoreLabel.text = "Score"
-        self.addChild(scoreLabel)
+    func createLabels(highScorePos: CGPoint, scorePos: CGPoint, ballsLeftPos: CGPoint, multiplierPos: CGPoint ){
         
-        scoreValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
-        scoreValueLabel.fontColor = .white
-        scoreValueLabel.fontSize = 24
-        scoreValueLabel.position = CGPoint(x: x, y: y - 20)
-        scoreValueLabel.text = "\(score)"
-        self.addChild(scoreValueLabel)
-    }
-    
-    func createBallsLabels(x: CGFloat, y: CGFloat){
-        ballsLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
-        ballsLabel.fontColor = .white
-        ballsLabel.fontSize = 24
-        ballsLabel.position = CGPoint(x: x, y: y + 20)
-        ballsLabel.text = "Balls Left"
-        self.addChild(ballsLabel)
-        
-        ballsValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
-        ballsValueLabel.fontColor = .white
-        ballsValueLabel.fontSize = 24
-        ballsValueLabel.position = CGPoint(x: x, y: y - 20)
-        ballsValueLabel.text = "\(balls)"
-        self.addChild(ballsValueLabel)
-    }
-    
-    func createHighScoreLabels(x: CGFloat, y: CGFloat){
-        highScoreLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
+        //High Score Labels
+        highScoreLabel = SKLabelNode(fontNamed: gameFont)
         highScoreLabel.fontColor = .white
         highScoreLabel.fontSize = 24
-        highScoreLabel.position = CGPoint(x: x, y: y + 20)
+        highScoreLabel.position = CGPoint(x: highScorePos.x, y: highScorePos.y + 20)
         highScoreLabel.text = "High Score"
         highScoreLabel.name = "highscore"
         self.addChild(highScoreLabel)
         
-        highScoreValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
+        highScoreValueLabel = SKLabelNode(fontNamed: gameFont)
         highScoreValueLabel.fontColor = .white
         highScoreValueLabel.fontSize = 24
-        highScoreValueLabel.position = CGPoint(x: x, y: y - 20)
+        highScoreValueLabel.position = CGPoint(x: highScorePos.x, y: highScorePos.y - 20)
         if !scoreBoardArray.isEmpty{
             self.highScoreValue = scoreBoardArray.last!
         }
         highScoreValueLabel.text = "\(highScoreValue)"
         self.addChild(highScoreValueLabel)
-    }
-    
-    func createMultiplierLabels(x: CGFloat, y: CGFloat){
-        multiplierLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
+        
+        //Current Score Labels
+        scoreLabel = SKLabelNode(fontNamed: gameFont)
+        scoreLabel.fontColor = .white
+        scoreLabel.fontSize = 24
+        scoreLabel.position = CGPoint(x: scorePos.x, y: scorePos.y + 20)
+        scoreLabel.text = "Score"
+        self.addChild(scoreLabel)
+        
+        scoreValueLabel = SKLabelNode(fontNamed: gameFont)
+        scoreValueLabel.fontColor = .white
+        scoreValueLabel.fontSize = 24
+        scoreValueLabel.position = CGPoint(x: scorePos.x, y: scorePos.y - 20)
+        scoreValueLabel.text = "\(score)"
+        self.addChild(scoreValueLabel)
+        
+        //Balls Left Labels
+        ballsLabel = SKLabelNode(fontNamed: gameFont)
+        ballsLabel.fontColor = .white
+        ballsLabel.fontSize = 24
+        ballsLabel.position = CGPoint(x: ballsLeftPos.x, y: ballsLeftPos.y + 20)
+        ballsLabel.text = "Balls Left"
+        self.addChild(ballsLabel)
+        
+        ballsValueLabel = SKLabelNode(fontNamed: gameFont)
+        ballsValueLabel.fontColor = .white
+        ballsValueLabel.fontSize = 24
+        ballsValueLabel.position = CGPoint(x: ballsLeftPos.x, y: ballsLeftPos.y - 20)
+        ballsValueLabel.text = "\(balls)"
+        self.addChild(ballsValueLabel)
+        
+        //Multiplier LAbels
+        multiplierLabel = SKLabelNode(fontNamed: gameFont)
         multiplierLabel.fontColor = .white
         multiplierLabel.fontSize = 24
-        multiplierLabel.position = CGPoint(x: x, y: y + 20)
+        multiplierLabel.position = CGPoint(x: multiplierPos.x, y: multiplierPos.y + 20)
         multiplierLabel.text = "Multiplier"
         self.addChild(multiplierLabel)
         
-        multiplierValueLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
+        multiplierValueLabel = SKLabelNode(fontNamed: gameFont)
         multiplierValueLabel.fontColor = .white
         multiplierValueLabel.fontSize = 24
-        multiplierValueLabel.position = CGPoint(x: x, y: y - 20)
+        multiplierValueLabel.position = CGPoint(x: multiplierPos.x, y: multiplierPos.y - 20)
         multiplierValueLabel.text = "\(multiplierValue)"
         self.addChild(multiplierValueLabel)
     }
     
+    func createGameOverBox(){
+        
+        gameOverBox = SKSpriteNode(color: .black, size: CGSize(width: self.size.width*0.7,height: self.size.height*0.2))
+        gameOverBox.position = CGPoint(x:0, y:0)
+        gameOverBox.drawBorder(color: .white, width: 3)
+        gameOverBox.isHidden = true
+        self.addChild(gameOverBox)
+        
+        mainMenuButton = SKLabelNode(fontNamed: gameFont)
+        mainMenuButton.fontColor = .white
+        mainMenuButton.fontSize = 30
+        mainMenuButton.position = CGPoint(x: 0, y: -40)
+        mainMenuButton.text = "Main Menu"
+        mainMenuButton.name = "mainMenu"
+        mainMenuButton.isHidden = true
+        gameOverBox.addChild(mainMenuButton)
+        
+        restartButton = SKLabelNode(fontNamed: gameFont)
+        restartButton.fontColor = .white
+        restartButton.fontSize = 30
+        restartButton.position = CGPoint(x: 0, y: 40)
+        restartButton.text = "Restart"
+        restartButton.name = "restart"
+        restartButton.isHidden = true
+        gameOverBox.addChild(restartButton)
+        
+        scoreboardMessage = SKLabelNode(fontNamed: gameFont)
+        scoreboardMessage.fontColor = .white
+        scoreboardMessage.fontSize = 24
+        scoreboardMessage.position = CGPoint(x:0, y: 100)
+        scoreboardMessage.name = "scoreBoardMessage"
+        scoreboardMessage.isHidden = false
+        gameOverBox.addChild(scoreboardMessage)
+    }
     
     
-    func startScorer() {
+    
+    
+    func startScoring() {
         let wait = SKAction.wait(forDuration: 0.1)
         let block = SKAction.run({
             [unowned self] in
@@ -274,16 +289,72 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.multiplierValue += 1
     }
     
+    
+    func enterName(after delay: Double) {
+        
+        highScoreText = UITextField(frame: CGRect(x: view!.bounds.width/2 - 160 ,y: view!.bounds.height / 2 - 20, width:320, height:40))
+        highScoreText.delegate = self
+        highScoreText.borderStyle = .roundedRect
+        highScoreText.textColor = .white
+        highScoreText.attributedPlaceholder = NSAttributedString(string: "Enter your name here",
+                                                                 attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
+        highScoreText.textAlignment = .center
+        highScoreText.backgroundColor = .darkGray
+        highScoreText.borderStyle = .roundedRect
+        highScoreText.autocorrectionType = .yes
+        highScoreText.clearButtonMode = .whileEditing
+        highScoreText.autocapitalizationType = .allCharacters
+        
+        let wait = DispatchTime.now() + delay
+        
+        DispatchQueue.main.asyncAfter(deadline: wait){
+            self.view!.addSubview(self.highScoreText)
+            self.highScoreText.becomeFirstResponder()
+        }
+       
+    }
+   
     func showGameOver() {
+        self.isGameOver = true
         for child in self.children{
             if child.name == "protoball"{
                 destroy(ball: child)
             }
         }
+        
         let wait = SKAction.wait(forDuration: 1)
         let appear = SKAction.unhide()
         let sequence = SKAction.sequence([wait,appear])
-        gameOverBox.run(sequence)
+       
+        
+        if let lowestScore = self.scoreBoardArray.first{
+            if self.score > lowestScore {
+                
+                enterName(after: 1)
+                gameOverBox.run(sequence)
+                if self.score > self.highScoreValue{
+                    scoreboardMessage.text = message.great.rawValue
+                    self.highScoreValue = self.score
+                }else{
+                    scoreboardMessage.text = message.good.rawValue
+                self.scoreBoardArray.addScore(newScore:self.highScoreValue)
+                UserDefaults.standard.set(self.scoreBoardArray, forKey: "scoreboard")
+                }
+                
+            }else{
+                gameOverBox.run(sequence)
+                scoreboardMessage.text = message.bad.rawValue
+            }
+        }else{
+            enterName(after: 1)
+            gameOverBox.run(sequence)
+            scoreboardMessage.text = message.great.rawValue
+            self.highScoreValue = self.score
+            self.scoreBoardArray.addScore(newScore:self.highScoreValue)
+            UserDefaults.standard.set(self.scoreBoardArray, forKey: "scoreboard")
+        }
+            
+        
     }
     
     func speedBasedVelocity() -> CGVector {
@@ -352,6 +423,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         aimLine!.path = pathToDraw
         aimLine!.strokeColor = SKColor.white
         aimLine!.lineWidth = 3
+        aimLine!.lineCap = CGLineCap.round
         aimLine!.name = "aimLine"
        
         addChild(aimLine!)
@@ -385,7 +457,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func touchUp(atPoint pos : CGPoint,  last touche: TimeInterval) {
         
-        startScorer()
+        startScoring()
 
         self.touchedNode?.physicsBody?.isDynamic = true
         self.touchedNode?.physicsBody = SKPhysicsBody(circleOfRadius: self.w! )
@@ -443,10 +515,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let pos = t.location(in: self)
         let node = self.atPoint(pos)
         if node.name == "restart"{
+            self.score = 0
+            self.multiplierValue = 0
             self.ballCount = 0
             self.ballsLeft = 10
             self.balls = 10
             gameOverBox.isHidden = true
+            restartButton.isHidden = true
+            mainMenuButton.isHidden = true
             self.isGameOver = false
         }else{
             if gameOverBox.isHidden{
@@ -539,25 +615,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if ballsLeft == 0{
                 if action(forKey: "timer") != nil {removeAction(forKey: "timer")}
-                
-                if self.score > self.highScoreValue{
-                    self.highScoreValue = self.score
-                    self.scoreBoardArray.append(self.highScoreValue)
-                    if self.scoreBoardArray.count > 10{
-                        self.scoreBoardArray.removeFirst()
-                    }
-                    UserDefaults.standard.set(self.scoreBoardArray, forKey: "scoreboard")
-                }
-                self.score = 0
-                self.multiplierValue = 0
-                
-                /*for child in self.children{
-                    if child.name == "ball"{
-                        destroy(ball: child)
-                    }
-                }*/
-                
-                self.isGameOver = true
                 showGameOver()
             }
         }
@@ -571,6 +628,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             addChild(fireParticles)
         }*/
         ball.removeFromParent()
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        highScoreText.removeFromSuperview()
+        restartButton.isHidden = false
+        mainMenuButton.isHidden = false
+        scoreboardMessage.isHidden = true
+        return true
     }
     
     func didBegin(_ contact: SKPhysicsContact) {

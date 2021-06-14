@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01B5C3682661BC18009631AF /* TestScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B5C3672661BC18009631AF /* TestScene.swift */; };
+		01B5C36A2661BC39009631AF /* TestScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 01B5C3692661BC39009631AF /* TestScene.sks */; };
 		01F18DC5263C3B6A0024EF2A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F18DC4263C3B6A0024EF2A /* AppDelegate.swift */; };
 		01F18DC7263C3B6A0024EF2A /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 01F18DC6263C3B6A0024EF2A /* GameScene.sks */; };
 		01F18DCB263C3B6A0024EF2A /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F18DCA263C3B6A0024EF2A /* GameScene.swift */; };
@@ -29,6 +31,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		01B5C3672661BC18009631AF /* TestScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScene.swift; sourceTree = "<group>"; };
+		01B5C3692661BC39009631AF /* TestScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = TestScene.sks; sourceTree = "<group>"; };
 		01F18DC1263C3B6A0024EF2A /* Orbito.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Orbito.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		01F18DC4263C3B6A0024EF2A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		01F18DC6263C3B6A0024EF2A /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -99,6 +103,8 @@
 				01F18DD1263C3B6D0024EF2A /* Assets.xcassets */,
 				01F18DD3263C3B6D0024EF2A /* Info.plist */,
 				01F18DE9264441920024EF2A /* OrbitoLaunch.storyboard */,
+				01B5C3672661BC18009631AF /* TestScene.swift */,
+				01B5C3692661BC39009631AF /* TestScene.sks */,
 			);
 			path = Orbito;
 			sourceTree = "<group>";
@@ -177,6 +183,7 @@
 				01F18DD0263C3B6A0024EF2A /* Main.storyboard in Resources */,
 				01F18DE22641ECAF0024EF2A /* SettingsScene.sks in Resources */,
 				01F18DC7263C3B6A0024EF2A /* GameScene.sks in Resources */,
+				01B5C36A2661BC39009631AF /* TestScene.sks in Resources */,
 				01F18DD2263C3B6D0024EF2A /* Assets.xcassets in Resources */,
 				01F18DDE263E1E960024EF2A /* MenuScene.sks in Resources */,
 				01F18DF12648CFFB0024EF2A /* mainImpact.sks in Resources */,
@@ -196,6 +203,7 @@
 				01F18DE42642DCE80024EF2A /* HighScore.swift in Sources */,
 				01F18DCD263C3B6A0024EF2A /* GameViewController.swift in Sources */,
 				01F18DDC263E1D740024EF2A /* MenuScene.swift in Sources */,
+				01B5C3682661BC18009631AF /* TestScene.swift in Sources */,
 				01F18DE02641EC650024EF2A /* SettingsScene.swift in Sources */,
 				01F18DE62642EF2D0024EF2A /* ScoreboardScene.swift in Sources */,
 				01F18DC5263C3B6A0024EF2A /* AppDelegate.swift in Sources */,

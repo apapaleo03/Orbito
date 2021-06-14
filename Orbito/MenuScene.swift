@@ -13,6 +13,7 @@ class MenuScene: SKScene {
     var playButtonLabel : SKLabelNode!
     var scoreboardButton : SKLabelNode!
     var settingsButton : SKLabelNode!
+    var testButton : SKLabelNode!
 
     override func didMove(to view: SKView) {
         let background = SKSpriteNode(imageNamed: "orbitoBackground.jpeg")
@@ -42,6 +43,14 @@ class MenuScene: SKScene {
         settingsButton.position = CGPoint(x: 0, y: -80)
         settingsButton.name = "settings"
         self.addChild(settingsButton)
+        
+        
+        testButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        testButton.text = "Test"
+        testButton.fontColor = .white
+        testButton.position = CGPoint(x: 0, y: -160)
+        testButton.name = "test"
+        self.addChild(testButton)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -67,6 +76,13 @@ class MenuScene: SKScene {
                 if let view = view {
                     let transition:SKTransition = SKTransition.doorsOpenHorizontal(withDuration: 1)
                     let scene = SKScene(fileNamed: "ScoreboardScene")
+                    scene?.scaleMode = .aspectFill
+                    view.presentScene(scene!, transition: transition)
+                }
+            }else if node.name == "test" {
+                if let view = view {
+                    let transition:SKTransition = SKTransition.doorsOpenHorizontal(withDuration: 1)
+                    let scene = SKScene(fileNamed: "TestScene")
                     scene?.scaleMode = .aspectFill
                     view.presentScene(scene!, transition: transition)
                 }
