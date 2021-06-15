@@ -23,34 +23,28 @@ class MenuScene: SKScene {
         background.zPosition = -1
         addChild(background)
         
-        playButtonLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
+        playButtonLabel = SKLabelNode(fontNamed: gameFont)
         playButtonLabel.text = "Play"
         playButtonLabel.fontColor = .white
         playButtonLabel.position = CGPoint(x: 0, y: 80)
         playButtonLabel.name = "play"
         self.addChild(playButtonLabel)
         
-        scoreboardButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        scoreboardButton = SKLabelNode(fontNamed: gameFont)
         scoreboardButton.text = "Scoreboard"
         scoreboardButton.fontColor = .white
         scoreboardButton.position = CGPoint(x: 0, y: 0)
         scoreboardButton.name = "scoreboard"
         self.addChild(scoreboardButton)
         
-        settingsButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        settingsButton = SKLabelNode(fontNamed: gameFont)
         settingsButton.text = "Settings"
         settingsButton.fontColor = .white
         settingsButton.position = CGPoint(x: 0, y: -80)
         settingsButton.name = "settings"
         self.addChild(settingsButton)
         
-        
-        testButton = SKLabelNode(fontNamed: "Baskerville-Bold")
-        testButton.text = "Test"
-        testButton.fontColor = .white
-        testButton.position = CGPoint(x: 0, y: -160)
-        testButton.name = "test"
-        self.addChild(testButton)
+       
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -76,13 +70,6 @@ class MenuScene: SKScene {
                 if let view = view {
                     let transition:SKTransition = SKTransition.doorsOpenHorizontal(withDuration: 1)
                     let scene = SKScene(fileNamed: "ScoreboardScene")
-                    scene?.scaleMode = .aspectFill
-                    view.presentScene(scene!, transition: transition)
-                }
-            }else if node.name == "test" {
-                if let view = view {
-                    let transition:SKTransition = SKTransition.doorsOpenHorizontal(withDuration: 1)
-                    let scene = SKScene(fileNamed: "TestScene")
                     scene?.scaleMode = .aspectFill
                     view.presentScene(scene!, transition: transition)
                 }

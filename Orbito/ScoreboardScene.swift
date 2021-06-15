@@ -11,7 +11,8 @@ class ScoreboardScene: SKScene {
 
     let defaults = UserDefaults.standard
     var backButton: SKLabelNode!
-    var scoreboardValue: SKLabelNode = SKLabelNode(fontNamed: "Baskerville-Bold")
+    var scoreboardValue: SKLabelNode = SKLabelNode(fontNamed: gameFont)
+    var scoreboardName: SKLabelNode = SKLabelNode(fontNamed: gameFont)
     var scoreboardLabel: SKLabelNode!
     
     
@@ -26,38 +27,45 @@ class ScoreboardScene: SKScene {
         background.zPosition = -1
         addChild(background)
         
-        backButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        backButton = SKLabelNode(fontNamed: gameFont)
         backButton.text = "Back"
         backButton.fontColor = .white
         backButton.position = CGPoint(x: -(self.size.width/2 - 140), y:self.size.height/2-97 )
         backButton.name = "back"
         self.addChild(backButton)
         
-        scoreboardLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
+        scoreboardLabel = SKLabelNode(fontNamed: gameFont)
         scoreboardLabel.text = "Scoreboard"
         scoreboardLabel.fontColor = .white
-        scoreboardLabel.fontSize = 40
+        scoreboardLabel.fontSize = 42
         scoreboardLabel.position = CGPoint(x: 0, y:350 )
         scoreboardLabel.name = "scoreboard"
         self.addChild(scoreboardLabel)
         
         
         
-        let highScores = defaults.object(forKey: "scoreboard") as? [Int] ?? []
-        var start = 230
-        for score in highScores.reversed(){
-            displayScore(at: CGPoint(x: 0, y: start), score: score)
-            start -= 60
+        if let highScores = loadScoreBoard(){
+            var start: CGFloat = 230
+            for score in highScores.entries.reversed(){
+                displayScore(at: start, score: score)
+                start -= 120
+            }
         }
         
     }
     
-    func displayScore(at pos: CGPoint, score value: Int?){
+    func displayScore(at y: CGFloat, score value: Score?){
         if let scoreLabel = scoreboardValue.copy() as? SKLabelNode{
-            scoreLabel.text = "\(value!)"
+            scoreLabel.text = "\(value!.score)"
             scoreLabel.fontColor = .white
-            scoreLabel.position = pos
+            scoreLabel.position = CGPoint(x:60,y:y)
             self.addChild(scoreLabel)
+        }
+        if let scoreName = scoreboardName.copy() as? SKLabelNode{
+            scoreName.text = value?.name
+            scoreName.fontColor = .white
+            scoreName.position = CGPoint(x:-60,y:y)
+            self.addChild(scoreName)
         }
     }
 

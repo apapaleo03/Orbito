@@ -15,13 +15,27 @@ class SettingsScene: SKScene {
     var mediumButton: SKLabelNode!
     var hardButton: SKLabelNode!
     var difficultyLabel: SKLabelNode!
+    var difficultyMessage: SKLabelNode!
+    
     var underline: SKSpriteNode!
+    
     var easyLine: SKShapeNode!
     var mediumLine: SKShapeNode!
     var hardLine: SKShapeNode!
+    
     var pathToDraw : CGMutablePath!
     
-    var difficultyMode = UserDefaults.standard.string(forKey: "difficulty") ?? "easy"
+    var currentMessage = ["easy":"Play with ball trackers and aim line.",
+                          "medium":"Only play with ball trackers.",
+                          "hard":"No ball trackers or aim line.\nLaunch speed affects ball speed."]
+    var difficultyMode = UserDefaults.standard.string(forKey: "difficulty") ?? "easy" {
+        didSet{
+            difficultyMessage.text = currentMessage[difficultyMode]
+        }
+    }
+    
+    
+    
     
 
     override func didMove(to view: SKView) {
@@ -33,14 +47,24 @@ class SettingsScene: SKScene {
         addChild(background)
         
         
-        difficultyLabel = SKLabelNode(fontNamed: "Baskerville-Bold")
+        difficultyLabel = SKLabelNode(fontNamed: gameFont)
         difficultyLabel.text = "Difficulty"
+        difficultyLabel.fontSize = 42
         difficultyLabel.fontColor = .white
-        difficultyLabel.position = CGPoint(x: 0, y: 120)
+        difficultyLabel.position = CGPoint(x: 0, y: 200)
         difficultyLabel.name = "difficulty"
         self.addChild(difficultyLabel)
         
-        easyButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        difficultyMessage = SKLabelNode(fontNamed: gameFont)
+        difficultyMessage.text = currentMessage[difficultyMode]
+        difficultyMessage.fontSize = 18
+        difficultyMessage.numberOfLines = 2
+        difficultyMessage.fontColor = .white
+        difficultyMessage.position = CGPoint(x: 0, y: -240)
+        difficultyMessage.name = "difficultyMessage"
+        self.addChild(difficultyMessage)
+        
+        easyButton = SKLabelNode(fontNamed: gameFont)
         easyButton.position = CGPoint(x: -120, y: 80)
         easyButton.text = "Easy"
         easyButton.name = "easy"
@@ -62,7 +86,7 @@ class SettingsScene: SKScene {
         }
         addChild(easyLine)
         
-        mediumButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        mediumButton = SKLabelNode(fontNamed: gameFont)
         mediumButton.position = CGPoint(x: 0, y: 80)
         mediumButton.text = "Medium"
         mediumButton.name = "medium"
@@ -84,7 +108,7 @@ class SettingsScene: SKScene {
         }
         addChild(mediumLine)
         
-        hardButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        hardButton = SKLabelNode(fontNamed: gameFont)
         hardButton.position = CGPoint(x: 120, y: 80)
         hardButton.text = "Hard"
         hardButton.name = "hard"
@@ -106,14 +130,14 @@ class SettingsScene: SKScene {
         addChild(hardLine)
         
         
-        backButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        backButton = SKLabelNode(fontNamed: gameFont)
         backButton.text = "Back"
         backButton.fontColor = .white
         backButton.position = CGPoint(x: -(self.size.width/2 - 140), y:self.size.height/2-97 )
         backButton.name = "back"
         self.addChild(backButton)
         
-        resetButton = SKLabelNode(fontNamed: "Baskerville-Bold")
+        resetButton = SKLabelNode(fontNamed: gameFont)
         resetButton.text = "Reset"
         resetButton.fontColor = .white
         resetButton.position = CGPoint(x: 0, y: -40)

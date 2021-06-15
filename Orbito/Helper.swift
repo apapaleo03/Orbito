@@ -14,6 +14,9 @@ import SpriteKit
 
 let gameFont = "Baskerville-Bold"
 
+
+
+
 extension SKSpriteNode {
     func drawBorder(color: UIColor, width: CGFloat) {
         let shapeNode = SKShapeNode(rect: frame)
@@ -32,28 +35,6 @@ extension Double {
     }
 }
 
-extension Array where Element == Int{
-    mutating func addScore(newScore:Int){
-        
-        var indexFound = false
-        
-        for i in 0..<self.count{
-            if newScore < self.index(after: i){
-                insert(newScore, at: i-1)
-                indexFound = true
-                break
-            }
-        }
-        
-        if !indexFound{
-            append(newScore)
-        }
-        
-        if self.count > 5{
-            removeFirst()
-        }
-    }
-}
 
 
 func RandomInt(min: Int, max: Int) -> Int {
@@ -133,6 +114,99 @@ func mapToEdge(point:CGPoint, screenSize: CGSize) -> CGPoint {
     
     return CGPoint(x: newX,y: newY)
 
+}
+
+
+struct Score: Codable {
+    let name: String
+    let score: Int
+    
+    func display() -> String{
+        return "\(name): \t\(score)"
+    }
+}
+
+struct ScoreBoard: Codable {
+    var entries: [Score] = []
+    
+    mutating func add(entry: Score){
+        
+        if !entries.isEmpty{
+            let scores = entries.map ({$0.score})
+            
+            if entry.score > scores.last!{
+                entries.insert(entry, at: entries.endIndex)
+            }else{
+                for i in 0..<scores.count{
+                    if entry.score < scores[i]{
+                        entries.insert(entry, at: i)
+                        break
+                    }
+                }
+            }
+            
+            if entries.count > 5{
+                entries.removeFirst()
+            }
+        }else{
+            entries = [entry]
+        }
+            
+    }
+    
+    func check(score: Int) -> String{
+        
+        if !entries.isEmpty {
+            let scores = entries.map ({$0.score}) 
+            
+            if score > scores.last!{
+                return "Great"
+            }else{
+                for i in 0..<scores.count{
+                    if score < scores[i]{
+                        return "Good"
+                    }
+                }
+                return "Poor"
+            }
+        }else{
+            return "Great"
+        }
+            
+    }
+}
+
+func saveScoreBoard(scoreboard: ScoreBoard){
+    do {
+        let encoder = JSONEncoder()
+        
+        let data = try encoder.encode(scoreboard)
+        
+        UserDefaults.standard.set(data, forKey: "scoreboard")
+        
+    } catch {
+        print("Unable to encode scoreboard")
+    }
+}
+
+func loadScoreBoard() -> ScoreBoard?{
+    if let data = UserDefaults.standard.data(forKey: "scoreboard") {
+        do {
+            // Create JSON Decoder
+            let decoder = JSONDecoder()
+
+            // Decode Note
+            let scoreboard = try decoder.decode(ScoreBoard.self, from: data)
+            
+            return scoreboard
+
+        } catch {
+            print("Unable to Decode ScoreBoard (\(error))")
+            return nil
+        }
+    }else{
+        return nil
+    }
 }
 
 

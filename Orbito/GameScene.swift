@@ -17,7 +17,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, UITextFieldDelegate {
     var staticNodes : Int?
     var history : [TouchInfo]?
     var touchedNode: SKShapeNode?
-    var scoreBoardArray = UserDefaults.standard.object(forKey: "scoreboard") as? [Int] ?? []
+    var scoreBoardArray = loadScoreBoard() ?? ScoreBoard()
     var w : CGFloat?
     let difficulty = UserDefaults.standard.string(forKey: "difficulty") ?? "easy"
     let gravity = SKFieldNode.radialGravityField()
@@ -186,8 +186,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, UITextFieldDelegate {
         highScoreValueLabel.fontColor = .white
         highScoreValueLabel.fontSize = 24
         highScoreValueLabel.position = CGPoint(x: highScorePos.x, y: highScorePos.y - 20)
-        if !scoreBoardArray.isEmpty{
-            self.highScoreValue = scoreBoardArray.last!
+        if !scoreBoardArray.entries.isEmpty{
+            self.highScoreValue = scoreBoardArray.entries.last!.score
         }
         highScoreValueLabel.text = "\(highScoreValue)"
         self.addChild(highScoreValueLabel)
@@ -289,7 +289,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, UITextFieldDelegate {
         self.multiplierValue += 1
     }
     
-    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let maxLength = 3
+        let currentString: NSString = (textField.text ?? "") as NSString
+        let newString: NSString =
+            currentString.replacingCharacters(in: range, with: string) as NSString
+        return newString.length <= maxLength
+    }
     func enterName(after delay: Double) {
         
         highScoreText = UITextField(frame: CGRect(x: view!.bounds.width/2 - 160 ,y: view!.bounds.height / 2 - 20, width:320, height:40))
@@ -301,7 +307,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, UITextFieldDelegate {
         highScoreText.textAlignment = .center
         highScoreText.backgroundColor = .darkGray
         highScoreText.borderStyle = .roundedRect
-        highScoreText.autocorrectionType = .yes
+        highScoreText.autocorrectionType = .no
         highScoreText.clearButtonMode = .whileEditing
         highScoreText.autocapitalizationType = .allCharacters
         
@@ -327,31 +333,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, UITextFieldDelegate {
         let sequence = SKAction.sequence([wait,appear])
        
         
-        if let lowestScore = self.scoreBoardArray.first{
-            if self.score > lowestScore {
-                
-                enterName(after: 1)
-                gameOverBox.run(sequence)
-                if self.score > self.highScoreValue{
-                    scoreboardMessage.text = message.great.rawValue
-                    self.highScoreValue = self.score
-                }else{
-                    scoreboardMessage.text = message.good.rawValue
-                self.scoreBoardArray.addScore(newScore:self.highScoreValue)
-                UserDefaults.standard.set(self.scoreBoardArray, forKey: "scoreboard")
-                }
-                
-            }else{
-                gameOverBox.run(sequence)
-                scoreboardMessage.text = message.bad.rawValue
-            }
-        }else{
-            enterName(after: 1)
-            gameOverBox.run(sequence)
+        let result = scoreBoardArray.check(score:self.score)
+        
+        switch result{
+        case "Great":
             scoreboardMessage.text = message.great.rawValue
             self.highScoreValue = self.score
-            self.scoreBoardArray.addScore(newScore:self.highScoreValue)
-            UserDefaults.standard.set(self.scoreBoardArray, forKey: "scoreboard")
+            enterName(after: 1)
+            gameOverBox.run(sequence)
+            
+        case "Good":
+            scoreboardMessage.text = message.good.rawValue
+            enterName(after: 1)
+            gameOverBox.run(sequence)
+        default:
+            gameOverBox.run(sequence)
+            scoreboardMessage.text = message.bad.rawValue
         }
             
         
@@ -631,6 +628,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        scoreBoardArray.add(entry: Score(name:textField.text!, score:self.score))
+        saveScoreBoard(scoreboard: scoreBoardArray)
         textField.resignFirstResponder()
         highScoreText.removeFromSuperview()
         restartButton.isHidden = false
